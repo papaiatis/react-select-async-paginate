@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Select, { components as defaultComponents } from 'react-select';
 
 import defaultShouldLoadMore from './default-should-load-more';
-import defaultReduceOptions from './default-reduce-options';
+import defaultReduceOptions from './defaultReduceOptions';
 
 import wrapMenuList from './wrap-menu-list';
 

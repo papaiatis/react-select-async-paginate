@@ -1,3 +1,11 @@
+## 0.4.0
+
+### Breaking changes
+
+* `additional` is `undefined` by default instead of `null`
+* save previous additional if not changed
+* Validate result of `loadOptions` call
+
 ## 0.3.14 (01 apr 2020)
 
 ### Bugfix
