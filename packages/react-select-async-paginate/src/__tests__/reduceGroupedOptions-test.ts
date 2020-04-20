@@ -1,4 +1,4 @@
-import reduceGroupedOptions from '../reduce-grouped-options';
+import reduceGroupedOptions from '../reduceGroupedOptions';
 
 test('should concat options by default', () => {
   const prevOptions = [
@@ -255,5 +255,5 @@ test('should concat options by default', () => {
     },
   ];
 
-  expect(reduceGroupedOptions(prevOptions, nextOptions)).toEqual(expectedOptions);
+  expect(reduceGroupedOptions(prevOptions, nextOptions, null)).toEqual(expectedOptions);
 });

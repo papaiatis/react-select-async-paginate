@@ -12,6 +12,7 @@ import type {
   GetInitialOptionsCacheParams,
   OptionsCache,
   OptionsCacheItem,
+  UseAsyncPaginateBaseResult,
   UseAsyncPaginateBaseParams,
   ReduceOptions,
 } from './types';
@@ -85,6 +86,7 @@ export const requestOptions = async <OptionType>(
   },
   optionsCache: OptionsCache<OptionType>,
   debounceTimeout: number,
+  sleepParam: typeof sleep,
   setOptionsCache: SetOptionsCache<OptionType>,
   validateResponseParam: typeof validateResponse,
   reduceOptions: ReduceOptions,
@@ -107,7 +109,7 @@ export const requestOptions = async <OptionType>(
   }));
 
   if (debounceTimeout > 0) {
-    await sleep(debounceTimeout);
+    await sleepParam(debounceTimeout);
 
     const newInputValue = paramsRef.current.inputValue;
 
@@ -130,7 +132,7 @@ export const requestOptions = async <OptionType>(
   try {
     const {
       loadOptions,
-    } = this.props;
+    } = paramsRef.current;
 
     response = await loadOptions(
       currentInputValue,
@@ -189,7 +191,7 @@ export const useAsyncPaginateBasePure = <OptionType>(
   requestOptionsParam: typeof requestOptions,
   params: UseAsyncPaginateBaseParams<OptionType>,
   deps: ReadonlyArray<any> = [],
-) => {
+): UseAsyncPaginateBaseResult<OptionType> => {
   const {
     options,
     defaultOptions,
@@ -198,6 +200,7 @@ export const useAsyncPaginateBasePure = <OptionType>(
     debounceTimeout = 0,
     inputValue,
     menuIsOpen,
+    filterOption = null,
     reduceOptions = defaultReduceOptions,
     shouldLoadMore = defaultShouldLoadMore,
   } = params;
@@ -218,6 +221,7 @@ export const useAsyncPaginateBasePure = <OptionType>(
       paramsRef,
       optionsCache,
       debounceTimeout,
+      sleep,
       setOptionsCache,
       validateResponseParam,
       reduceOptions,
@@ -267,16 +271,17 @@ export const useAsyncPaginateBasePure = <OptionType>(
   return {
     handleScrolledToBottom,
     shouldLoadMore,
+    filterOption,
     isLoading: currentOptions.isLoading,
     isFirstLoad: currentOptions.isFirstLoad,
     options: currentOptions.options,
   };
 };
 
-export const useAsyncPaginateBase = <OptionType>(
+export const useAsyncPaginateBase = <OptionType = any>(
   params: UseAsyncPaginateBaseParams<OptionType>,
-  inputs: any[] = [],
-) => useAsyncPaginateBasePure(
+  deps: ReadonlyArray<any> = [],
+): UseAsyncPaginateBaseResult<OptionType> => useAsyncPaginateBasePure(
   useRef,
   useState,
   useEffect,
@@ -285,5 +290,5 @@ export const useAsyncPaginateBase = <OptionType>(
   getInitialOptionsCache,
   requestOptions,
   params,
-  inputs,
+  deps,
 );

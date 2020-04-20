@@ -1,4 +1,8 @@
-const reduceGroupedOptions = (prevOptions, loadedOptions) => {
+import type {
+  ReduceOptions,
+} from './types';
+
+const reduceGroupedOptions: ReduceOptions = (prevOptions, loadedOptions) => {
   const res = prevOptions.slice();
 
   const mapLabelToIndex = {};

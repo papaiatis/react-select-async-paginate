@@ -5,6 +5,7 @@
 * `additional` is `undefined` by default instead of `null`
 * save previous additional if not changed
 * Validate result of `loadOptions` call
+* use `withAsyncPaginate` and `withAsyncPaginateBase` instead of `SelectComponent` prop
 
 ## 0.3.14 (01 apr 2020)
 
