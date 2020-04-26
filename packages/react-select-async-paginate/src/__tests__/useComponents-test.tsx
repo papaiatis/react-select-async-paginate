@@ -1,3 +1,4 @@
+import React from 'react';
 import type {
   FC,
 } from 'react';
@@ -7,7 +8,7 @@ import {
   useComponentsPure,
 } from '../useComponents';
 
-const defaultUseMemo = (callback) => callback();
+const defaultUseMemo = (callback: () => any): any => callback();
 
 test('should provide correct deps to useMemo', () => {
   const Test: FC = () => <div />;

@@ -6,7 +6,9 @@ import type {
   OptionsType,
 } from 'react-select';
 
-export type OptionsList<OptionType = any> = GroupedOptionsType<OptionType> | OptionsType<OptionType>;
+export type OptionsList<OptionType = any> =
+  | GroupedOptionsType<OptionType>
+  | OptionsType<OptionType>;
 
 export type ReduceOptions<OptionType = any, Additional = any> = (
   prevOptions: OptionsList<OptionType>,

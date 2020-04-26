@@ -1,4 +1,4 @@
-import { wrapMenuList} from '../wrapMenuList';
+import { wrapMenuList } from '../wrapMenuList';
 import { reduceGroupedOptions } from '../reduceGroupedOptions';
 import { withAsyncPaginateBase } from '../withAsyncPaginateBase';
 import { withAsyncPaginate } from '../withAsyncPaginate';

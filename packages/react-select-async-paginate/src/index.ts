@@ -14,3 +14,20 @@ export { useAsyncPaginate } from './useAsyncPaginate';
 
 export const AsyncPaginateBase = withAsyncPaginateBase(Select);
 export const AsyncPaginate = withAsyncPaginate(Select);
+
+export type {
+  OptionsList,
+  ReduceOptions,
+  GetInitialOptionsCacheParams,
+  OptionsCacheItem,
+  OptionsCache,
+  ShouldLoadMore,
+  Response,
+  LoadOptions,
+  FilterOption,
+  UseAsyncPaginateBaseResult,
+  UseAsyncPaginateResult,
+  UseAsyncPaginateParams,
+  UseAsyncPaginateBaseParams,
+  ComponentProps,
+} from './types';

@@ -18,6 +18,7 @@ import type {
 
 import type {
   UseAsyncPaginateBaseResult,
+  LoadOptions,
 } from '../types';
 
 const TestComponent: FC = () => <div />;
@@ -28,18 +29,20 @@ type PageObject = {
   getChildNode: () => ShallowWrapper;
 };
 
+const defaultLoadOptions: LoadOptions = () => ({
+  options: [],
+});
+
 const defaultProps = {
-  loadOptions: () => ({
-    options: [],
-  }),
+  loadOptions: defaultLoadOptions,
   inputValue: '',
   menuIsOpen: false,
 
   useComponents: (): SelectComponentsConfig<any> => ({}),
 
   useAsyncPaginateBase: (): UseAsyncPaginateBaseResult => ({
-    handleScrolledToBottom: () => {},
-    shouldLoadMore: () => true,
+    handleScrolledToBottom: (): void => {},
+    shouldLoadMore: (): boolean => true,
     isLoading: true,
     isFirstLoad: true,
     options: [],
@@ -55,7 +58,7 @@ const setup = (props: Partial<Props>): PageObject => {
     />,
   );
 
-  const getChildNode = () => wrapper.find(TestComponent);
+  const getChildNode = (): ShallowWrapper => wrapper.find(TestComponent);
 
   return {
     getChildNode,
@@ -82,9 +85,9 @@ test('should provide props from hook to child', () => {
     },
   ];
 
-  const useAsyncPaginateBase = () => ({
-    handleScrolledToBottom: () => {},
-    shouldLoadMore: () => true,
+  const useAsyncPaginateBase = (): UseAsyncPaginateBaseResult => ({
+    handleScrolledToBottom: (): void => {},
+    shouldLoadMore: (): boolean => true,
     isLoading: true,
     isFirstLoad: true,
     filterOption: null,
@@ -118,9 +121,9 @@ test('should redefine parent props with hook props', () => {
     },
   ];
 
-  const useAsyncPaginateBase = () => ({
-    handleScrolledToBottom: () => { },
-    shouldLoadMore: () => true,
+  const useAsyncPaginateBase = (): UseAsyncPaginateBaseResult => ({
+    handleScrolledToBottom: (): void => {},
+    shouldLoadMore: (): boolean => true,
     isLoading: true,
     isFirstLoad: true,
     filterOption: null,
@@ -165,8 +168,11 @@ test('should call hook with correct params', () => {
   const params = useAsyncPaginateBase.mock.calls[0][0];
 
   expect(params.options).toBe(options);
+  // eslint-disable-next-line no-prototype-builtins
   expect(params.hasOwnProperty('selectRef')).toBe(false);
+  // eslint-disable-next-line no-prototype-builtins
   expect(params.hasOwnProperty('cacheUniqs')).toBe(false);
+  // eslint-disable-next-line no-prototype-builtins
   expect(params.hasOwnProperty('useAsyncPaginateBase')).toBe(false);
 });
 
@@ -195,8 +201,8 @@ test('should call hook with deps from cacheUniq', () => {
 
 test('should call useComponents hook', () => {
   const useComponents = jest.fn<
-    SelectComponentsConfig<any>,
-    [SelectComponentsConfig<any>]
+  SelectComponentsConfig<any>,
+  [SelectComponentsConfig<any>]
   >(() => ({}));
 
   const Test: FC = () => <div />;
@@ -220,7 +226,7 @@ test('should use result of useComponents hook', () => {
     Menu: Test,
   };
 
-  const useComponents = () => components;
+  const useComponents = (): SelectComponentsConfig<any> => components;
 
   const page = setup({
     components,

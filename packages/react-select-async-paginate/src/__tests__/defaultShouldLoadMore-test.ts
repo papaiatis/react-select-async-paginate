@@ -1,4 +1,4 @@
-import defaultShouldLoadMore from '../defaultShouldLoadMore';
+import { defaultShouldLoadMore } from '../defaultShouldLoadMore';
 
 test('should load more', () => {
   expect(defaultShouldLoadMore(

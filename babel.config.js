@@ -37,6 +37,5 @@ module.exports = {
     ['@babel/plugin-transform-runtime', {
       version: require('@babel/helpers/package.json').version,
     }],
-    '@babel/plugin-proposal-class-properties',
   ],
 };

@@ -5,8 +5,8 @@ import {
   useCallback,
 } from 'react';
 
-import defaultShouldLoadMore from './defaultShouldLoadMore';
-import defaultReduceOptions from './defaultReduceOptions';
+import { defaultShouldLoadMore } from './defaultShouldLoadMore';
+import { defaultReduceOptions } from './defaultReduceOptions';
 
 import type {
   GetInitialOptionsCacheParams,
@@ -51,7 +51,7 @@ export const getInitialOptionsCache = <OptionType, Additional>({
       ? defaultOptions
       : options;
 
-  if (initialOptions){
+  if (initialOptions) {
     return {
       '': {
         isFirstLoad: false,
@@ -69,12 +69,12 @@ export const getInitialOptionsCache = <OptionType, Additional>({
 export const getInitialCache = <OptionType, Additional>(
   params: UseAsyncPaginateBaseParams<OptionType, Additional>,
 ): OptionsCacheItem<OptionType, Additional> => ({
-  isFirstLoad: true,
-  options: [],
-  hasMore: true,
-  isLoading: false,
-  additional: params.additional,
-});
+    isFirstLoad: true,
+    options: [],
+    hasMore: true,
+    isLoading: false,
+    additional: params.additional,
+  });
 
 type MapOptionsCache<OptionType> = (
   prevCache: OptionsCache<OptionType>,
@@ -84,7 +84,7 @@ type SetOptionsCache<OptionType> = (stateMapper: MapOptionsCache<OptionType>) =>
 
 export const requestOptions = async <OptionType, Additional>(
   paramsRef: {
-    current: UseAsyncPaginateBaseParams<OptionType>,
+    current: UseAsyncPaginateBaseParams<OptionType>;
   },
   optionsCache: OptionsCache<OptionType>,
   debounceTimeout: number,
@@ -166,6 +166,7 @@ export const requestOptions = async <OptionType, Additional>(
     hasMore,
   } = response;
 
+  // eslint-disable-next-line no-prototype-builtins
   const newAdditional = response.hasOwnProperty('additional')
     ? response.additional
     : currentOptions.additional;
@@ -287,13 +288,13 @@ export const useAsyncPaginateBase = <OptionType = any, Additional = any>(
   params: UseAsyncPaginateBaseParams<OptionType, Additional>,
   deps: ReadonlyArray<any> = [],
 ): UseAsyncPaginateBaseResult<OptionType> => useAsyncPaginateBasePure<OptionType, Additional>(
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-  validateResponse,
-  getInitialOptionsCache,
-  requestOptions,
-  params,
-  deps,
-);
+    useRef,
+    useState,
+    useEffect,
+    useCallback,
+    validateResponse,
+    getInitialOptionsCache,
+    requestOptions,
+    params,
+    deps,
+  );

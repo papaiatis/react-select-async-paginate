@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "ts",
+    "jsx": "react",
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/__tests__",
+    "src/__stories__"
+  ]
+}

@@ -19,13 +19,13 @@ export const useComponentsPure = <OptionType>(
   useMemoParam: typeof useMemo,
   components: SelectComponentsConfig<OptionType>,
 ): SelectComponentsConfig<OptionType> => useMemoParam(() => ({
-  MenuList: (MenuList as unknown as ComponentType<MenuListComponentProps<OptionType>>),
-  ...components,
-}), [components]);
+    MenuList: (MenuList as unknown as ComponentType<MenuListComponentProps<OptionType>>),
+    ...components,
+  }), [components]);
 
 export const useComponents = <OptionType = any>(
   components: SelectComponentsConfig<OptionType>,
-): SelectComponentsConfig<OptionType> => <OptionType>useComponentsPure(
-  useMemo,
-  components,
-);
+): SelectComponentsConfig<OptionType> => useComponentsPure(
+    useMemo,
+    components,
+  );

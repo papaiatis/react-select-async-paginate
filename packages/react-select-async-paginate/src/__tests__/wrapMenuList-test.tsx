@@ -11,7 +11,7 @@ import { wrapMenuList, CHECK_TIMEOUT } from '../wrapMenuList';
 import type {
   Props,
 } from '../wrapMenuList';
-import defaultShouldLoadMore from '../defaultShouldLoadMore';
+import { defaultShouldLoadMore } from '../defaultShouldLoadMore';
 
 jest.useFakeTimers();
 
@@ -23,10 +23,11 @@ const defaultProps: Props = {
   innerRef: null,
 
   selectProps: {
-    handleScrolledToBottom: () => {},
+    handleScrolledToBottom: (): void => {},
     shouldLoadMore: defaultShouldLoadMore,
   },
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   setTimeout: () => 0,
   clearTimeout: () => {},
@@ -53,7 +54,7 @@ const setup = (props: Partial<Props>): PageObject => {
   );
 
   return {
-    getChildNode: () => wrapper.find(TestComponent),
+    getChildNode: (): ShallowWrapper => wrapper.find(TestComponent),
   };
 };
 
@@ -166,7 +167,7 @@ test('should not handle if ref el is scrollable and shouldLoadMore returns false
 
     selectProps: {
       ...defaultProps.selectProps,
-      shouldLoadMore: () => false,
+      shouldLoadMore: (): boolean => false,
     },
 
     useCallback,
@@ -195,7 +196,7 @@ test('should handle if ref el is scrollable and shouldLoadMore returns true', ()
 
     selectProps: {
       ...defaultProps.selectProps,
-      shouldLoadMore: () => true,
+      shouldLoadMore: (): boolean => true,
     },
 
     useCallback,
@@ -303,6 +304,7 @@ test('should call checkAndLoad and start on call setCheckAndHandleTimeout', () =
 
   setup({
     useCallback,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     setTimeout,
 

@@ -1,4 +1,5 @@
 import {
+  useState as reactUseState,
   useCallback as reactUseCallbact,
 } from 'react';
 
@@ -15,9 +16,9 @@ import type {
 
 const defaultUseCallback: typeof reactUseCallbact = (fn) => fn;
 
-const makeUseState = () => jest.fn()
-  .mockReturnValueOnce(['', () => {}])
-  .mockReturnValueOnce([false, () => {}]);
+const makeUseState = (): typeof reactUseState => jest.fn()
+  .mockReturnValueOnce(['', (): void => {}])
+  .mockReturnValueOnce([false, (): void => {}]);
 
 const defaultParams: UseAsyncPaginateParams = {
   loadOptions: () => ({
@@ -26,8 +27,8 @@ const defaultParams: UseAsyncPaginateParams = {
 };
 
 const defaultUseAsyncPaginateBase = (): UseAsyncPaginateBaseResult => ({
-  handleScrolledToBottom: () => {},
-  shouldLoadMore: () => true,
+  handleScrolledToBottom: (): void => {},
+  shouldLoadMore: (): boolean => true,
   isLoading: true,
   isFirstLoad: true,
   options: [],
@@ -140,14 +141,14 @@ test('should return all fields from of useAsyncPaginateBase', () => {
 
 test('should provide inputValue to useAsyncPaginateBase and response', () => {
   const useAsyncPaginateBase = jest.fn<
-    UseAsyncPaginateBaseResult,
-    [UseAsyncPaginateBaseParams]
+  UseAsyncPaginateBaseResult,
+  [UseAsyncPaginateBaseParams]
   >(defaultUseAsyncPaginateBase);
 
   const result = useAsyncPaginatePure(
     jest.fn()
-      .mockReturnValueOnce(['test', () => {}])
-      .mockReturnValueOnce([false, () => {}]),
+      .mockReturnValueOnce(['test', (): void => {}])
+      .mockReturnValueOnce([false, (): void => {}]),
     defaultUseCallback,
     useAsyncPaginateBase,
     defaultParams,
@@ -165,7 +166,7 @@ test('should change inputValue on input change', () => {
   const result = useAsyncPaginatePure(
     jest.fn()
       .mockReturnValueOnce(['test', setInputValue])
-      .mockReturnValueOnce([false, () => { }]),
+      .mockReturnValueOnce([false, (): void => {}]),
     defaultUseCallback,
     defaultUseAsyncPaginateBase,
     defaultParams,
@@ -179,14 +180,14 @@ test('should change inputValue on input change', () => {
 
 test('should provide truthy menuIsOpen to useAsyncPaginateBase and response', () => {
   const useAsyncPaginateBase = jest.fn<
-    UseAsyncPaginateBaseResult,
-    [UseAsyncPaginateBaseParams]
+  UseAsyncPaginateBaseResult,
+  [UseAsyncPaginateBaseParams]
   >(defaultUseAsyncPaginateBase);
 
   const result = useAsyncPaginatePure(
     jest.fn()
-      .mockReturnValueOnce(['', () => { }])
-      .mockReturnValueOnce([true, () => { }]),
+      .mockReturnValueOnce(['', (): void => {}])
+      .mockReturnValueOnce([true, (): void => {}]),
     defaultUseCallback,
     useAsyncPaginateBase,
     defaultParams,
@@ -200,14 +201,14 @@ test('should provide truthy menuIsOpen to useAsyncPaginateBase and response', ()
 
 test('should provide falsy menuIsOpen to useAsyncPaginateBase and response', () => {
   const useAsyncPaginateBase = jest.fn<
-    UseAsyncPaginateBaseResult,
-    [UseAsyncPaginateBaseParams]
+  UseAsyncPaginateBaseResult,
+  [UseAsyncPaginateBaseParams]
   >(defaultUseAsyncPaginateBase);
 
   const result = useAsyncPaginatePure(
     jest.fn()
-      .mockReturnValueOnce(['', () => { }])
-      .mockReturnValueOnce([false, () => { }]),
+      .mockReturnValueOnce(['', (): void => {}])
+      .mockReturnValueOnce([false, (): void => {}]),
     defaultUseCallback,
     useAsyncPaginateBase,
     defaultParams,
@@ -224,7 +225,7 @@ test('should open menu', () => {
 
   const result = useAsyncPaginatePure(
     jest.fn()
-      .mockReturnValueOnce(['', () => {}])
+      .mockReturnValueOnce(['', (): void => {}])
       .mockReturnValueOnce([false, setMenuIsOpen]),
     defaultUseCallback,
     defaultUseAsyncPaginateBase,
@@ -242,7 +243,7 @@ test('should close menu', () => {
 
   const result = useAsyncPaginatePure(
     jest.fn()
-      .mockReturnValueOnce(['', () => { }])
+      .mockReturnValueOnce(['', (): void => {}])
       .mockReturnValueOnce([true, setMenuIsOpen]),
     defaultUseCallback,
     defaultUseAsyncPaginateBase,

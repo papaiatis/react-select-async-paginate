@@ -23,8 +23,8 @@ export const useAsyncPaginatePure = <OptionType, Additional>(
   const [inputValue, setInputValue] = useStateParam('');
   const [menuIsOpen, setMenuIsOpen] = useStateParam(false);
 
-  const onInputChange = useCallbackParam((inputValue: string): void => {
-    setInputValue(inputValue);
+  const onInputChange = useCallbackParam((nextInputValue: string): void => {
+    setInputValue(nextInputValue);
   }, []);
 
   const onMenuClose = useCallbackParam((): void => {
@@ -36,8 +36,8 @@ export const useAsyncPaginatePure = <OptionType, Additional>(
   }, []);
 
   const baseResult: UseAsyncPaginateBaseResult<OptionType> = useAsyncPaginateBaseParam<
-    OptionType,
-    Additional
+  OptionType,
+  Additional
   >(
     {
       ...params,
@@ -61,9 +61,9 @@ export const useAsyncPaginate = <OptionType = any, Additional = any>(
   params: UseAsyncPaginateParams<OptionType, Additional>,
   deps: ReadonlyArray<any> = [],
 ): UseAsyncPaginateResult<OptionType> => useAsyncPaginatePure<OptionType, Additional>(
-  useState,
-  useCallback,
-  useAsyncPaginateBase,
-  params,
-  deps,
-);
+    useState,
+    useCallback,
+    useAsyncPaginateBase,
+    params,
+    deps,
+  );

@@ -14,7 +14,7 @@ import type {
   ShouldLoadMore,
 } from './types';
 
-export const CHECK_TIMEOUT: number = 300;
+export const CHECK_TIMEOUT = 300;
 
 export type Props = {
   selectProps: {
@@ -55,17 +55,7 @@ export const wrapMenuList = (MenuList: ComponentType<ComponentProps>): FC<Props>
     } = props;
 
     const checkTimeoutRef = useRefProp(null);
-    const menuListRef = useRefProp<HTMLElement>(null!);
-
-    useEffectProp(() => {
-      setCheckAndHandleTimeout();
-
-      return () => {
-        if (checkTimeoutRef.current){
-          clearTimeoutProp(checkTimeoutRef.current);
-        }
-      };
-    }, []);
+    const menuListRef = useRefProp<HTMLElement>(null);
 
     const shouldHandle = useCallbackProp(() => {
       const el = menuListRef.current;
@@ -98,13 +88,23 @@ export const wrapMenuList = (MenuList: ComponentType<ComponentProps>): FC<Props>
       checkTimeoutRef.current = setTimeoutProp(setCheckAndHandleTimeout, CHECK_TIMEOUT);
     }, [checkAndHandle]);
 
+    useEffectProp(() => {
+      setCheckAndHandleTimeout();
+
+      return (): void => {
+        if (checkTimeoutRef.current) {
+          clearTimeoutProp(checkTimeoutRef.current);
+        }
+      };
+    }, []);
+
     return (
       <MenuList
         {...props}
         innerRef={composeRefs<HTMLElement>(innerRef, menuListRef)}
       />
     );
-  }
+  };
 
   WrappedMenuList.defaultProps = {
     useEffect,

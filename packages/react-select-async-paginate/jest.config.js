@@ -2,10 +2,10 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.ts',
     'src/**/*.tsx',
-    '!src/**/__stories__/**/*.js',
-    '!src/**/__stories__/**/*.jsx',
-    '!src/**/__tests__/**/*.js',
-    '!src/**/__tests__/**/*.jsx',
+    '!src/**/__stories__/**/*.ts',
+    '!src/**/__stories__/**/*.tsx',
+    '!src/**/__tests__/**/*.ts',
+    '!src/**/__tests__/**/*.tsx',
   ],
 
   coverageReporters: [

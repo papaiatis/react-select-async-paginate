@@ -2,9 +2,7 @@ import type {
   ReduceOptions,
 } from './types';
 
-const defaultReduceOptions: ReduceOptions = (
+export const defaultReduceOptions: ReduceOptions = (
   prevOptions,
   loadedOptions,
 ) => [...prevOptions, ...loadedOptions];
-
-export default defaultReduceOptions;
