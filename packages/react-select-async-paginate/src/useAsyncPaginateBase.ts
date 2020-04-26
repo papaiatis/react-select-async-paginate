@@ -40,11 +40,11 @@ export const validateResponse = (
   }
 };
 
-export const getInitialOptionsCache = <OptionType>({
+export const getInitialOptionsCache = <OptionType, Additional>({
   options,
   defaultOptions,
   additional,
-}: GetInitialOptionsCacheParams<OptionType>): OptionsCache<OptionType> => {
+}: GetInitialOptionsCacheParams<OptionType, Additional>): OptionsCache<OptionType, Additional> => {
   const initialOptions = defaultOptions === true
     ? null
     : (defaultOptions instanceof Array)
@@ -66,9 +66,9 @@ export const getInitialOptionsCache = <OptionType>({
   return {};
 };
 
-export const getInitialCache = <OptionType>(
-  params: UseAsyncPaginateBaseParams<OptionType>,
-): OptionsCacheItem<OptionType> => ({
+export const getInitialCache = <OptionType, Additional>(
+  params: UseAsyncPaginateBaseParams<OptionType, Additional>,
+): OptionsCacheItem<OptionType, Additional> => ({
   isFirstLoad: true,
   options: [],
   hasMore: true,
@@ -76,11 +76,13 @@ export const getInitialCache = <OptionType>(
   additional: params.additional,
 });
 
-type MapOptionsCache<OptionType> = (prevCache: OptionsCache<OptionType>) => OptionsCache<OptionType>;
+type MapOptionsCache<OptionType> = (
+  prevCache: OptionsCache<OptionType>,
+) => OptionsCache<OptionType>;
 
 type SetOptionsCache<OptionType> = (stateMapper: MapOptionsCache<OptionType>) => void;
 
-export const requestOptions = async <OptionType>(
+export const requestOptions = async <OptionType, Additional>(
   paramsRef: {
     current: UseAsyncPaginateBaseParams<OptionType>,
   },
@@ -93,7 +95,7 @@ export const requestOptions = async <OptionType>(
 ): Promise<void> => {
   const currentInputValue = paramsRef.current.inputValue;
 
-  const currentOptions: OptionsCacheItem<OptionType> = optionsCache[currentInputValue]
+  const currentOptions: OptionsCacheItem<OptionType, Additional> = optionsCache[currentInputValue]
     || getInitialCache(paramsRef.current);
 
   if (currentOptions.isLoading || !currentOptions.hasMore) {
@@ -181,7 +183,7 @@ export const requestOptions = async <OptionType>(
   }));
 };
 
-export const useAsyncPaginateBasePure = <OptionType>(
+export const useAsyncPaginateBasePure = <OptionType, Additional>(
   useRefParam: typeof useRef,
   useStateParam: typeof useState,
   useEffectParam: typeof useEffect,
@@ -189,7 +191,7 @@ export const useAsyncPaginateBasePure = <OptionType>(
   validateResponseParam: typeof validateResponse,
   getInitialOptionsCacheParam: typeof getInitialOptionsCache,
   requestOptionsParam: typeof requestOptions,
-  params: UseAsyncPaginateBaseParams<OptionType>,
+  params: UseAsyncPaginateBaseParams<OptionType, Additional>,
   deps: ReadonlyArray<any> = [],
 ): UseAsyncPaginateBaseResult<OptionType> => {
   const {
@@ -205,18 +207,21 @@ export const useAsyncPaginateBasePure = <OptionType>(
     shouldLoadMore = defaultShouldLoadMore,
   } = params;
 
-  const isInitRef = useRefParam(true);
-  const paramsRef = useRefParam(params);
+  const isInitRef = useRefParam<boolean>(true);
+  const paramsRef = useRefParam<UseAsyncPaginateBaseParams<OptionType, Additional>>(params);
 
   paramsRef.current = params;
 
-  const [optionsCache, setOptionsCache] = useStateParam(() => getInitialOptionsCacheParam({
+  const [
+    optionsCache,
+    setOptionsCache,
+  ] = useStateParam<OptionsCache<OptionType, Additional>>(() => getInitialOptionsCacheParam({
     options,
     defaultOptions,
     additional,
   }));
 
-  const callRequestOptions = () => {
+  const callRequestOptions = (): void => {
     requestOptionsParam(
       paramsRef,
       optionsCache,
@@ -228,7 +233,7 @@ export const useAsyncPaginateBasePure = <OptionType>(
     );
   };
 
-  const handleScrolledToBottom = useCallbackParam(() => {
+  const handleScrolledToBottom = useCallbackParam((): void => {
     const currentInputValue = paramsRef.current.inputValue;
     const currentOptions = optionsCache[currentInputValue];
 
@@ -265,7 +270,7 @@ export const useAsyncPaginateBasePure = <OptionType>(
     }
   }, [menuIsOpen]);
 
-  const currentOptions: OptionsCacheItem<OptionType> = optionsCache[inputValue]
+  const currentOptions: OptionsCacheItem<OptionType, Additional> = optionsCache[inputValue]
     || getInitialCache(params);
 
   return {
@@ -278,10 +283,10 @@ export const useAsyncPaginateBasePure = <OptionType>(
   };
 };
 
-export const useAsyncPaginateBase = <OptionType = any>(
-  params: UseAsyncPaginateBaseParams<OptionType>,
+export const useAsyncPaginateBase = <OptionType = any, Additional = any>(
+  params: UseAsyncPaginateBaseParams<OptionType, Additional>,
   deps: ReadonlyArray<any> = [],
-): UseAsyncPaginateBaseResult<OptionType> => useAsyncPaginateBasePure(
+): UseAsyncPaginateBaseResult<OptionType> => useAsyncPaginateBasePure<OptionType, Additional>(
   useRef,
   useState,
   useEffect,

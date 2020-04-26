@@ -2,7 +2,7 @@ import type {
   ReduceOptions,
 } from './types';
 
-const reduceGroupedOptions: ReduceOptions = (prevOptions, loadedOptions) => {
+export const reduceGroupedOptions: ReduceOptions = (prevOptions, loadedOptions) => {
   const res = prevOptions.slice();
 
   const mapLabelToIndex = {};
@@ -41,5 +41,3 @@ const reduceGroupedOptions: ReduceOptions = (prevOptions, loadedOptions) => {
 
   return res;
 };
-
-export default reduceGroupedOptions;

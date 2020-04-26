@@ -31,6 +31,7 @@ const defaultUseAsyncPaginateBase = (): UseAsyncPaginateBaseResult => ({
   isLoading: true,
   isFirstLoad: true,
   options: [],
+  filterOption: null,
 });
 
 test('should provide all params to useAsyncPaginateBase', () => {
@@ -102,6 +103,7 @@ test('should provide all params to useAsyncPaginateBase', () => {
 test('should return all fields from of useAsyncPaginateBase', () => {
   const handleScrolledToBottom = jest.fn();
   const shouldLoadMore = jest.fn();
+  const filterOption = jest.fn();
 
   const options: OptionsList = [
     {
@@ -124,6 +126,7 @@ test('should return all fields from of useAsyncPaginateBase', () => {
       isLoading: true,
       isFirstLoad: true,
       options,
+      filterOption,
     }),
     defaultParams,
   );

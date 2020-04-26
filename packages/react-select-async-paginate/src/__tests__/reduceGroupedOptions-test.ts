@@ -1,4 +1,4 @@
-import reduceGroupedOptions from '../reduceGroupedOptions';
+import { reduceGroupedOptions } from '../reduceGroupedOptions';
 
 test('should concat options by default', () => {
   const prevOptions = [

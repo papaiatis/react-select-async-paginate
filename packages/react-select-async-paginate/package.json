@@ -4,11 +4,11 @@
   "description": "Wrapper above react-select that supports pagination on menu scroll",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "typings": "index.d.ts",
+  "typings": "ts/index.d.ts",
   "files": [
     "/es",
     "/lib",
-    "index.d.ts"
+    "/ts"
   ],
   "keywords": [
     "react",
@@ -29,16 +29,15 @@
     "codecov": "codecov -F react_select_async_paginate"
   },
   "peerDependencies": {
-    "@types/react-select": "^3.0.0",
     "react": "^16.8.0",
     "react-select": "^2.0.0 || ^3.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
+    "@seznam/compose-react-refs": "^1.0.4",
     "prop-types": "^15.7.2"
   },
   "devDependencies": {
-    "@types/react-select": "^3.0.11",
     "react-select": "^3.0.8"
   }
 }
