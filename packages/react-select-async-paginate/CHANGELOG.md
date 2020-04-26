@@ -6,6 +6,7 @@
 * save previous additional if not changed
 * Validate result of `loadOptions` call
 * use `withAsyncPaginate` and `withAsyncPaginateBase` instead of `SelectComponent` prop
+* use named export instead of default export
 
 ## 0.3.14 (01 apr 2020)
 

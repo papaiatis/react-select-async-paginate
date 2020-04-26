@@ -40,6 +40,7 @@
     "qs": "^6.9.3"
   },
   "devDependencies": {
+    "@types/qs": "^6.9.1",
     "@types/react-select": "^3.0.10",
     "react-select": "^3.0.8",
     "react-select-async-paginate": "^0.3.10",
