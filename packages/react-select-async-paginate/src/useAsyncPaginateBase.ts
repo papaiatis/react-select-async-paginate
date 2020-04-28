@@ -4,6 +4,7 @@ import {
   useRef,
   useCallback,
 } from 'react';
+import sleep from 'sleep-promise';
 
 import { defaultShouldLoadMore } from './defaultShouldLoadMore';
 import { defaultReduceOptions } from './defaultReduceOptions';
@@ -18,12 +19,6 @@ import type {
 } from './types';
 
 const errorText = '[react-select-async-paginate] response of "loadOptions" should be an object with "options" prop, which contains array of options.';
-
-const sleep = (ms: number): Promise<void> => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
 
 export const validateResponse = (
   console: Console,

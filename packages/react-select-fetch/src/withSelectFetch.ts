@@ -6,43 +6,45 @@ import type {
 import type {
   Props as SelectProps,
 } from 'react-select';
-
-import {
-  useAsyncPaginate,
-} from './useAsyncPaginate';
 import {
   useComponents,
-} from './useComponents';
+} from 'react-select-async-paginate';
+import type {
+  ComponentProps,
+  UseAsyncPaginateResult,
+} from 'react-select-async-paginate';
+
+import {
+  useSelectFetch,
+} from './useSelectFetch';
 
 import type {
-  UseAsyncPaginateResult,
-  UseAsyncPaginateParams,
-  ComponentProps,
+  UseSelectFetchParams,
 } from './types';
 
-export type Props<OptionType = any, Additional = any> =
+export type Props<OptionType = any> =
   & SelectProps<OptionType>
-  & UseAsyncPaginateParams<OptionType, Additional>
+  & UseSelectFetchParams<OptionType>
   & ComponentProps
   & {
     useComponents: typeof useComponents;
-    useAsyncPaginate?: typeof useAsyncPaginate;
+    useSelectFetch?: typeof useSelectFetch;
   };
 
-export const withAsyncPaginate = <OptionType = any, Additional = any>(
+export const withSelectFetch = <OptionType = any, Additional = any>(
   SelectComponent: ComponentType<SelectProps<OptionType>>,
-): FC<Props<OptionType, Additional>> => {
-  const WithAsyncPaginate: FC<Props<OptionType, Additional>> = (props) => {
+): FC<Props<OptionType>> => {
+  const WithAsyncPaginate: FC<Props<OptionType>> = (props) => {
     const {
       components,
       selectRef,
       useComponents: useComponentsProp,
-      useAsyncPaginate: useAsyncPaginateProp,
+      useSelectFetch: useSelectFetchProp,
       cacheUniqs,
       ...rest
     } = props;
 
-    const asyncPaginateProps: UseAsyncPaginateResult<OptionType> = useAsyncPaginateProp(
+    const asyncPaginateProps: UseAsyncPaginateResult<OptionType> = useSelectFetchProp(
       rest,
       cacheUniqs,
     );
@@ -65,7 +67,7 @@ export const withAsyncPaginate = <OptionType = any, Additional = any>(
     cacheUniqs: [],
     components: {},
     useComponents,
-    useAsyncPaginate,
+    useSelectFetch,
   };
 
   return WithAsyncPaginate;

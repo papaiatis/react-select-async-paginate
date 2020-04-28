@@ -37,9 +37,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
-    "@seznam/compose-react-refs": "^1.0.4"
+    "@seznam/compose-react-refs": "^1.0.4",
+    "sleep-promise": "^8.0.1"
   },
   "devDependencies": {
+    "@types/react-select": "^3.0.12",
     "enzyme": "^3.11.0",
     "react-select": "^3.0.8"
   }

@@ -135,6 +135,26 @@ test('should concat options by default', () => {
         },
       ],
     },
+    {
+      label: 'Type #4',
+      options: [
+        {
+          value: 20,
+          type: 2,
+          label: 'Option 20',
+        },
+        {
+          value: 21,
+          type: 2,
+          label: 'Option 21',
+        },
+        {
+          value: 22,
+          type: 2,
+          label: 'Option 22',
+        },
+      ],
+    },
   ];
 
   const expectedOptions = [
@@ -250,6 +270,26 @@ test('should concat options by default', () => {
           value: 19,
           type: 3,
           label: 'Option 19',
+        },
+      ],
+    },
+    {
+      label: 'Type #4',
+      options: [
+        {
+          value: 20,
+          type: 2,
+          label: 'Option 20',
+        },
+        {
+          value: 21,
+          type: 2,
+          label: 'Option 21',
+        },
+        {
+          value: 22,
+          type: 2,
+          label: 'Option 22',
         },
       ],
     },

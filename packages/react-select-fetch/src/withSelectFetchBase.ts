@@ -6,43 +6,45 @@ import type {
 import type {
   Props as SelectProps,
 } from 'react-select';
-
-import {
-  useAsyncPaginate,
-} from './useAsyncPaginate';
 import {
   useComponents,
-} from './useComponents';
+} from 'react-select-async-paginate';
+import type {
+  ComponentProps,
+  UseAsyncPaginateBaseResult,
+} from 'react-select-async-paginate';
+
+import {
+  useSelectFetchBase,
+} from './useSelectFetchBase';
 
 import type {
-  UseAsyncPaginateResult,
-  UseAsyncPaginateParams,
-  ComponentProps,
+  UseSelectFetchBaseParams,
 } from './types';
 
-export type Props<OptionType = any, Additional = any> =
+export type Props<OptionType = any> =
   & SelectProps<OptionType>
-  & UseAsyncPaginateParams<OptionType, Additional>
+  & UseSelectFetchBaseParams<OptionType>
   & ComponentProps
   & {
     useComponents: typeof useComponents;
-    useAsyncPaginate?: typeof useAsyncPaginate;
+    useSelectFetchBase?: typeof useSelectFetchBase;
   };
 
-export const withAsyncPaginate = <OptionType = any, Additional = any>(
+export const withSelectFetchBase = <OptionType = any, Additional = any>(
   SelectComponent: ComponentType<SelectProps<OptionType>>,
-): FC<Props<OptionType, Additional>> => {
-  const WithAsyncPaginate: FC<Props<OptionType, Additional>> = (props) => {
+): FC<Props<OptionType>> => {
+  const WithAsyncPaginate: FC<Props<OptionType>> = (props) => {
     const {
       components,
       selectRef,
       useComponents: useComponentsProp,
-      useAsyncPaginate: useAsyncPaginateProp,
+      useSelectFetchBase: useSelectFetchBaseProp,
       cacheUniqs,
       ...rest
     } = props;
 
-    const asyncPaginateProps: UseAsyncPaginateResult<OptionType> = useAsyncPaginateProp(
+    const asyncPaginateBaseProps: UseAsyncPaginateBaseResult<OptionType> = useSelectFetchBaseProp(
       rest,
       cacheUniqs,
     );
@@ -53,7 +55,7 @@ export const withAsyncPaginate = <OptionType = any, Additional = any>(
       SelectComponent,
       {
         ...props,
-        ...asyncPaginateProps,
+        ...asyncPaginateBaseProps,
         components: processedComponents,
         ref: selectRef,
       },
@@ -65,7 +67,7 @@ export const withAsyncPaginate = <OptionType = any, Additional = any>(
     cacheUniqs: [],
     components: {},
     useComponents,
-    useAsyncPaginate,
+    useSelectFetchBase,
   };
 
   return WithAsyncPaginate;

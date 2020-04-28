@@ -10,35 +10,29 @@ import type {
   OptionsType,
   SelectComponentsConfig,
 } from 'react-select';
+import type {
+  UseAsyncPaginateResult,
+} from 'react-select-async-paginate';
 
-import { withAsyncPaginate } from '../withAsyncPaginate';
+import { withSelectFetch } from '../withSelectFetch';
 import type {
   Props,
-} from '../withAsyncPaginate';
-
-import type {
-  LoadOptions,
-  UseAsyncPaginateResult,
-} from '../types';
+} from '../withSelectFetch';
 
 const TestComponent: FC = () => <div />;
 
-const AsyncPagintate = withAsyncPaginate(TestComponent);
+const SelectFetch = withSelectFetch(TestComponent);
 
 type PageObject = {
   getChildNode: () => ShallowWrapper;
 };
 
-const defaultLoadOptions: LoadOptions = () => ({
-  options: [],
-});
-
 const defaultProps = {
-  loadOptions: defaultLoadOptions,
+  url: '',
 
   useComponents: (): SelectComponentsConfig<any> => ({}),
 
-  useAsyncPaginate: (): UseAsyncPaginateResult => ({
+  useSelectFetch: (): UseAsyncPaginateResult => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
@@ -55,7 +49,7 @@ const defaultProps = {
 
 const setup = (props: Partial<Props>): PageObject => {
   const wrapper: ShallowWrapper = shallow(
-    <AsyncPagintate
+    <SelectFetch
       {...defaultProps}
       {...props}
     />,
@@ -88,7 +82,7 @@ test('should provide props from hook to child', () => {
     },
   ];
 
-  const useAsyncPaginate = (): UseAsyncPaginateResult => ({
+  const useSelectFetch = (): UseAsyncPaginateResult => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
@@ -103,7 +97,7 @@ test('should provide props from hook to child', () => {
   });
 
   const page = setup({
-    useAsyncPaginate,
+    useSelectFetch,
   });
 
   const childNode = page.getChildNode();
@@ -131,7 +125,7 @@ test('should redefine parent props with hook props', () => {
     },
   ];
 
-  const useAsyncPaginate = (): UseAsyncPaginateResult => ({
+  const useSelectFetch = (): UseAsyncPaginateResult => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
@@ -147,7 +141,7 @@ test('should redefine parent props with hook props', () => {
 
   const page = setup({
     options: optionsProp,
-    useAsyncPaginate,
+    useSelectFetch,
   });
 
   const childNode = page.getChildNode();
@@ -163,7 +157,7 @@ test('should call hook with correct params', () => {
     },
   ];
 
-  const useAsyncPaginate = jest.fn();
+  const useSelectFetch = jest.fn();
 
   const Test: FC = () => <div />;
 
@@ -175,12 +169,12 @@ test('should call hook with correct params', () => {
     selectRef: () => {},
     cacheUniqs: [1, 2, 3],
     options,
-    useAsyncPaginate,
+    useSelectFetch,
   });
 
-  expect(useAsyncPaginate.mock.calls.length).toBe(1);
+  expect(useSelectFetch.mock.calls.length).toBe(1);
 
-  const params = useAsyncPaginate.mock.calls[0][0];
+  const params = useSelectFetch.mock.calls[0][0];
 
   expect(params.options).toBe(options);
   // eslint-disable-next-line no-prototype-builtins
@@ -188,30 +182,30 @@ test('should call hook with correct params', () => {
   // eslint-disable-next-line no-prototype-builtins
   expect(params.hasOwnProperty('selectRef')).toBe(false);
   // eslint-disable-next-line no-prototype-builtins
-  expect(params.hasOwnProperty('useAsyncPaginate')).toBe(false);
+  expect(params.hasOwnProperty('useSelectFetch')).toBe(false);
 });
 
 test('should call hook with empty deps', () => {
-  const useAsyncPaginate = jest.fn();
+  const useSelectFetch = jest.fn();
 
   setup({
-    useAsyncPaginate,
+    useSelectFetch,
   });
 
-  expect(useAsyncPaginate.mock.calls[0][1].length).toBe(0);
+  expect(useSelectFetch.mock.calls[0][1].length).toBe(0);
 });
 
 test('should call hook with deps from cacheUniq', () => {
   const cacheUniqs = [1, 2, 3];
 
-  const useAsyncPaginate = jest.fn();
+  const useSelectFetch = jest.fn();
 
   setup({
     cacheUniqs,
-    useAsyncPaginate,
+    useSelectFetch,
   });
 
-  expect(useAsyncPaginate.mock.calls[0][1]).toBe(cacheUniqs);
+  expect(useSelectFetch.mock.calls[0][1]).toBe(cacheUniqs);
 });
 
 test('should call useComponents hook', () => {

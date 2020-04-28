@@ -1,6 +1,8 @@
 import type {
   OptionsList,
   Response,
+  UseAsyncPaginateParams,
+  UseAsyncPaginateBaseParams,
 } from 'react-select-async-paginate';
 
 export type Additional = {
@@ -25,7 +27,7 @@ export type Get = (
   },
 ) => any;
 
-export type UseSelectFetchParams<OptionType = any> = {
+export type UseSelectFetchMapParams<OptionType = any> = {
   url: string;
   queryParams?: {
     [key: string]: any;
@@ -36,3 +38,15 @@ export type UseSelectFetchParams<OptionType = any> = {
   mapResponse?: MapResponse<OptionType>;
   get?: Get;
 };
+
+export type UseSelectFetchParams<OptionType = any> =
+  & UseSelectFetchMapParams<OptionType>
+  & Partial<UseAsyncPaginateParams<OptionType, Additional>>;
+
+export type UseSelectFetchBaseParams<OptionType = any> =
+  & UseSelectFetchParams<OptionType>
+  & Partial<UseAsyncPaginateBaseParams<OptionType, Additional>>
+  & {
+    inputValue: string;
+    menuIsOpen: boolean;
+  };

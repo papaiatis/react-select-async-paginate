@@ -1,18 +1,20 @@
 import {
-  useSelectFetchPure,
-} from '../useSelectFetch';
+  useSelectFetchBasePure,
+} from '../useSelectFetchBase';
 
 const defaultParams = {
   url: '',
+  inputValue: '',
+  menuIsOpen: false,
 };
 
 test('should call useMapToAsyncPaginate with correct params', () => {
   const useMapToAsyncPaginate = jest.fn();
-  const useAsyncPaginate = jest.fn();
+  const useAsyncPaginateBase = jest.fn();
 
-  useSelectFetchPure(
+  useSelectFetchBasePure(
     useMapToAsyncPaginate,
-    useAsyncPaginate,
+    useAsyncPaginateBase,
     defaultParams,
   );
 
@@ -20,7 +22,7 @@ test('should call useMapToAsyncPaginate with correct params', () => {
   expect(useMapToAsyncPaginate).toBeCalledWith(defaultParams);
 });
 
-test('should call useAsyncPaginate with correct params', () => {
+test('should call useAsyncPaginateBase with correct params', () => {
   const shouldLoadMore = jest.fn();
   const loadOptions = jest.fn();
   const additional = {
@@ -32,19 +34,19 @@ test('should call useAsyncPaginate with correct params', () => {
     additional,
   };
 
-  const useAsyncPaginate = jest.fn();
+  const useAsyncPaginateBase = jest.fn();
 
-  useSelectFetchPure(
+  useSelectFetchBasePure(
     () => mappedParams,
-    useAsyncPaginate,
+    useAsyncPaginateBase,
     {
       ...defaultParams,
       shouldLoadMore,
     },
   );
 
-  expect(useAsyncPaginate).toBeCalledTimes(1);
-  expect(useAsyncPaginate).toBeCalledWith(
+  expect(useAsyncPaginateBase).toBeCalledTimes(1);
+  expect(useAsyncPaginateBase).toBeCalledWith(
     {
       ...defaultParams,
       loadOptions,
@@ -55,18 +57,18 @@ test('should call useAsyncPaginate with correct params', () => {
   );
 });
 
-test('should provide correct deps to useAsyncPaginate', () => {
-  const useAsyncPaginate = jest.fn();
+test('should provide correct deps to useAsyncPaginateBase', () => {
+  const useAsyncPaginateBase = jest.fn();
 
-  useSelectFetchPure(
+  useSelectFetchBasePure(
     jest.fn(),
-    useAsyncPaginate,
+    useAsyncPaginateBase,
     defaultParams,
     [1, 2, 3],
   );
 
-  expect(useAsyncPaginate).toBeCalledTimes(1);
-  expect(useAsyncPaginate).toBeCalledWith(
+  expect(useAsyncPaginateBase).toBeCalledTimes(1);
+  expect(useAsyncPaginateBase).toBeCalledWith(
     defaultParams,
     [1, 2, 3],
   );
@@ -87,7 +89,7 @@ test('should return correct result', () => {
     onInputChange: jest.fn(),
   };
 
-  const result = useSelectFetchPure(
+  const result = useSelectFetchBasePure(
     jest.fn(),
     () => expectedResult,
     defaultParams,

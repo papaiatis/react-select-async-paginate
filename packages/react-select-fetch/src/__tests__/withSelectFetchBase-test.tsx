@@ -10,52 +10,43 @@ import type {
   OptionsType,
   SelectComponentsConfig,
 } from 'react-select';
+import type {
+  UseAsyncPaginateBaseResult,
+} from 'react-select-async-paginate';
 
-import { withAsyncPaginate } from '../withAsyncPaginate';
+import { withSelectFetchBase } from '../withSelectFetchBase';
 import type {
   Props,
-} from '../withAsyncPaginate';
-
-import type {
-  LoadOptions,
-  UseAsyncPaginateResult,
-} from '../types';
+} from '../withSelectFetchBase';
 
 const TestComponent: FC = () => <div />;
 
-const AsyncPagintate = withAsyncPaginate(TestComponent);
+const SelectFetchBase = withSelectFetchBase(TestComponent);
 
 type PageObject = {
   getChildNode: () => ShallowWrapper;
 };
 
-const defaultLoadOptions: LoadOptions = () => ({
-  options: [],
-});
-
 const defaultProps = {
-  loadOptions: defaultLoadOptions,
+  url: '',
+  inputValue: '',
+  menuIsOpen: false,
 
   useComponents: (): SelectComponentsConfig<any> => ({}),
 
-  useAsyncPaginate: (): UseAsyncPaginateResult => ({
+  useSelectFetchBase: (): UseAsyncPaginateBaseResult => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
     isFirstLoad: true,
     options: [],
     filterOption: null,
-    inputValue: '',
-    onInputChange: (): void => {},
-    menuIsOpen: false,
-    onMenuOpen: (): void => {},
-    onMenuClose: (): void => {},
   }),
 };
 
 const setup = (props: Partial<Props>): PageObject => {
   const wrapper: ShallowWrapper = shallow(
-    <AsyncPagintate
+    <SelectFetchBase
       {...defaultProps}
       {...props}
     />,
@@ -88,22 +79,17 @@ test('should provide props from hook to child', () => {
     },
   ];
 
-  const useAsyncPaginate = (): UseAsyncPaginateResult => ({
+  const useSelectFetchBase = (): UseAsyncPaginateBaseResult => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
     isFirstLoad: true,
     filterOption: null,
-    inputValue: '',
-    onInputChange: (): void => {},
-    menuIsOpen: false,
-    onMenuOpen: (): void => {},
-    onMenuClose: (): void => {},
     options,
   });
 
   const page = setup({
-    useAsyncPaginate,
+    useSelectFetchBase,
   });
 
   const childNode = page.getChildNode();
@@ -131,23 +117,18 @@ test('should redefine parent props with hook props', () => {
     },
   ];
 
-  const useAsyncPaginate = (): UseAsyncPaginateResult => ({
+  const useSelectFetchBase = (): UseAsyncPaginateBaseResult => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
     isFirstLoad: true,
     filterOption: null,
-    inputValue: '',
-    onInputChange: (): void => {},
-    menuIsOpen: false,
-    onMenuOpen: (): void => {},
-    onMenuClose: (): void => {},
     options: optionsHookResult,
   });
 
   const page = setup({
     options: optionsProp,
-    useAsyncPaginate,
+    useSelectFetchBase,
   });
 
   const childNode = page.getChildNode();
@@ -163,7 +144,7 @@ test('should call hook with correct params', () => {
     },
   ];
 
-  const useAsyncPaginate = jest.fn();
+  const useSelectFetchBase = jest.fn();
 
   const Test: FC = () => <div />;
 
@@ -175,12 +156,12 @@ test('should call hook with correct params', () => {
     selectRef: () => {},
     cacheUniqs: [1, 2, 3],
     options,
-    useAsyncPaginate,
+    useSelectFetchBase,
   });
 
-  expect(useAsyncPaginate.mock.calls.length).toBe(1);
+  expect(useSelectFetchBase.mock.calls.length).toBe(1);
 
-  const params = useAsyncPaginate.mock.calls[0][0];
+  const params = useSelectFetchBase.mock.calls[0][0];
 
   expect(params.options).toBe(options);
   // eslint-disable-next-line no-prototype-builtins
@@ -188,30 +169,30 @@ test('should call hook with correct params', () => {
   // eslint-disable-next-line no-prototype-builtins
   expect(params.hasOwnProperty('selectRef')).toBe(false);
   // eslint-disable-next-line no-prototype-builtins
-  expect(params.hasOwnProperty('useAsyncPaginate')).toBe(false);
+  expect(params.hasOwnProperty('useSelectFetchBase')).toBe(false);
 });
 
 test('should call hook with empty deps', () => {
-  const useAsyncPaginate = jest.fn();
+  const useSelectFetchBase = jest.fn();
 
   setup({
-    useAsyncPaginate,
+    useSelectFetchBase,
   });
 
-  expect(useAsyncPaginate.mock.calls[0][1].length).toBe(0);
+  expect(useSelectFetchBase.mock.calls[0][1].length).toBe(0);
 });
 
 test('should call hook with deps from cacheUniq', () => {
   const cacheUniqs = [1, 2, 3];
 
-  const useAsyncPaginate = jest.fn();
+  const useSelectFetchBase = jest.fn();
 
   setup({
     cacheUniqs,
-    useAsyncPaginate,
+    useSelectFetchBase,
   });
 
-  expect(useAsyncPaginate.mock.calls[0][1]).toBe(cacheUniqs);
+  expect(useSelectFetchBase.mock.calls[0][1]).toBe(cacheUniqs);
 });
 
 test('should call useComponents hook', () => {

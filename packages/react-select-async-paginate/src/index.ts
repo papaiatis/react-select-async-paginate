@@ -11,6 +11,7 @@ export { withAsyncPaginate };
 
 export { useAsyncPaginateBase } from './useAsyncPaginateBase';
 export { useAsyncPaginate } from './useAsyncPaginate';
+export { useComponents } from './useComponents';
 
 export const AsyncPaginateBase = withAsyncPaginateBase(Select);
 export const AsyncPaginate = withAsyncPaginate(Select);

@@ -42,7 +42,7 @@ export const withAsyncPaginateBase = <OptionType = any, Additional = any>(
       ...rest
     } = props;
 
-    const asyncPaginateBaseProps: UseAsyncPaginateBaseResult = useAsyncPaginateBaseProp(
+    const asyncPaginateBaseProps: UseAsyncPaginateBaseResult<OptionType> = useAsyncPaginateBaseProp(
       rest,
       cacheUniqs,
     );
