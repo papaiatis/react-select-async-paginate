@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
-import AsyncPaginate from '..';
+import { AsyncPaginate } from '..';
+import type {
+  LoadOptions,
+} from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -10,13 +15,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const loadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;
@@ -42,14 +41,17 @@ const loadOptions = async (search, prevOptions) => {
   };
 };
 
-const shouldLoadMore = (scrollHeight, clientHeight, scrollTop) => {
-  const bottomBorder = (scrollHeight - clientHeight) / 2;
+const increase = (numberOfRequests: number): number => numberOfRequests + 1;
 
-  return bottomBorder < scrollTop;
-};
-
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
+  const [numberOfRequests, setNumberOfRequests] = useState(0);
+
+  const wrappedLoadOptions: LoadOptions = (inputValue, prevOptions) => {
+    setNumberOfRequests(increase);
+
+    return loadOptions(inputValue, prevOptions);
+  };
 
   return (
     <div
@@ -57,16 +59,20 @@ const Example = () => {
         maxWidth: 300,
       }}
     >
-      <p>New options will load when scrolling to half</p>
+      <p>
+        Number of requests:
+        {' '}
+        {numberOfRequests}
+      </p>
 
       <AsyncPaginate
+        debounceTimeout={300}
         value={value}
-        loadOptions={loadOptions}
+        loadOptions={wrappedLoadOptions}
         onChange={onChange}
-        shouldLoadMore={shouldLoadMore}
       />
     </div>
   );
 };
 
-export default () => <Example />;
+export default Example;

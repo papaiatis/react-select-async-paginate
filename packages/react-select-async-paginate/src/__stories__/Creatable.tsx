@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
+import Creatable from 'react-select/creatable';
 
-import AsyncPaginate from '..';
+import { withAsyncPaginate } from '..';
+import type {
+  LoadOptions,
+} from '..';
+
+const AsyncPaginateCreatable = withAsyncPaginate(Creatable);
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -10,13 +18,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const loadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;
@@ -42,9 +44,7 @@ const loadOptions = async (search, prevOptions) => {
   };
 };
 
-const initialOptions = options.slice(0, 10);
-
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
 
   return (
@@ -53,8 +53,7 @@ const Example = () => {
         maxWidth: 300,
       }}
     >
-      <AsyncPaginate
-        options={initialOptions}
+      <AsyncPaginateCreatable
         value={value}
         loadOptions={loadOptions}
         onChange={onChange}
@@ -63,4 +62,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;

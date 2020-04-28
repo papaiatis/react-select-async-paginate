@@ -1,8 +1,13 @@
 /* eslint-disable react/no-array-index-key */
 
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
 import { AsyncPaginateBase } from '..';
+import type {
+  LoadOptions,
+} from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -12,13 +17,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const loadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;
@@ -44,13 +43,20 @@ const loadOptions = async (search, prevOptions) => {
   };
 };
 
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
   const [inputValue, onInputChangeRaw] = useState('');
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [inputHistory, setInputHistory] = useState([]);
 
-  const onInputChange = (newInputValue, { action }) => {
+  const onInputChange = (
+    newInputValue: string,
+    {
+      action,
+    }: {
+      action: string;
+    },
+  ): void => {
     setInputHistory([
       ...inputHistory,
       {
@@ -62,11 +68,11 @@ const Example = () => {
     onInputChangeRaw(newInputValue);
   };
 
-  const onMenuOpen = () => {
+  const onMenuOpen = (): void => {
     setMenuIsOpen(true);
   };
 
-  const onMenuClose = () => {
+  const onMenuClose = (): void => {
     setMenuIsOpen(false);
   };
 
@@ -124,4 +130,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;

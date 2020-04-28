@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
-import AsyncPaginate from '..';
+import { AsyncPaginate } from '..';
+import type {
+  LoadOptions,
+  ShouldLoadMore,
+} from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -10,13 +16,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const loadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;
@@ -42,7 +42,13 @@ const loadOptions = async (search, prevOptions) => {
   };
 };
 
-const Example = () => {
+const shouldLoadMore: ShouldLoadMore = (scrollHeight, clientHeight, scrollTop) => {
+  const bottomBorder = (scrollHeight - clientHeight) / 2;
+
+  return bottomBorder < scrollTop;
+};
+
+const Example: FC = () => {
   const [value, onChange] = useState(null);
 
   return (
@@ -51,13 +57,16 @@ const Example = () => {
         maxWidth: 300,
       }}
     >
+      <p>New options will load when scrolling to half</p>
+
       <AsyncPaginate
         value={value}
         loadOptions={loadOptions}
         onChange={onChange}
+        shouldLoadMore={shouldLoadMore}
       />
     </div>
   );
 };
 
-export default () => <Example />;
+export default Example;

@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
-import AsyncPaginate, { reduceGroupedOptions } from '..';
+import { AsyncPaginate, reduceGroupedOptions } from '..';
+import type {
+  LoadOptions,
+} from '..';
 
-const options = [];
+type OptionType = {
+  value: number | string;
+  type: number;
+  label: string;
+};
+
+type Additional = {
+  page: number;
+};
+
+const options: OptionType[] = [];
 for (let i = 0; i < 50; ++i) {
   options.push({
     value: i + 1,
@@ -11,18 +26,18 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
 const optionsPerPage = 10;
 
-const loadOptions = async (search, page) => {
+const loadOptions = async (search: string, page: number): Promise<{
+  options: {
+    label: string;
+    options: OptionType[];
+  }[];
+  hasMore: boolean;
+}> => {
   await sleep(1000);
 
-  let filteredOptions;
+  let filteredOptions: OptionType[];
   if (!search) {
     filteredOptions = options;
   } else {
@@ -39,7 +54,7 @@ const loadOptions = async (search, page) => {
     page * optionsPerPage,
   );
 
-  const mapTypeToIndex = new Map();
+  const mapTypeToIndex = new Map<number, number>();
 
   const result = [];
 
@@ -68,7 +83,13 @@ const loadOptions = async (search, page) => {
   };
 };
 
-const wrapperdLoadOptions = async (q, prevOptions, { page }) => {
+const wrapperdLoadOptions: LoadOptions<OptionType, Additional> = async (
+  q,
+  prevOptions,
+  {
+    page,
+  },
+) => {
   const {
     options: responseOptions,
     hasMore,
@@ -88,7 +109,7 @@ const defaultAdditional = {
   page: 1,
 };
 
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
 
   return (
@@ -108,4 +129,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;

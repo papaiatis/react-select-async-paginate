@@ -24,9 +24,10 @@
     "build": "yarn build:cjs && yarn build:es && yarn build:ts",
     "build:cjs": "cross-env BABEL_ENV=cjs babel --extensions '.ts,.tsx' src --out-dir lib --ignore \"src/**/__tests__\",\"src/**/__stories__\"",
     "build:es": "cross-env BABEL_ENV=es babel --extensions '.ts,.tsx' src --out-dir es --ignore \"src/**/__tests__\",\"src/**/__stories__\"",
-    "build:ts": "tsc --declaration",
+    "build:ts": "tsc --declaration --emitDeclarationOnly",
     "lint": "eslint src --ext .ts,.tsx --ignore-path ../../.gitignore",
     "prepare": "yarn clean && yarn build",
+    "test:ts": "tsc -p ./tsconfig.validate.json --noEmit",
     "test:unit": "jest",
     "test:unit:cov": "jest --coverage",
     "codecov": "codecov -F react_select_async_paginate"
@@ -38,9 +39,11 @@
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@seznam/compose-react-refs": "^1.0.4",
+    "react-is-mounted-hook": "^1.0.3",
     "sleep-promise": "^8.0.1"
   },
   "devDependencies": {
+    "@storybook/react": "^5.3.18",
     "@types/react-select": "^3.0.12",
     "enzyme": "^3.11.0",
     "react-select": "^3.0.8"

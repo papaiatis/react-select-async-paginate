@@ -28,6 +28,7 @@
     "build:ts": "tsc --declaration --emitDeclarationOnly",
     "lint": "eslint src --ext .ts,.tsx --ignore-path ../../.gitignore",
     "prepare": "yarn clean && yarn build",
+    "test:ts": "tsc -p ./tsconfig.validate.json --noEmit",
     "test:unit": "jest",
     "test:unit:cov": "jest --coverage",
     "codecov": "codecov -F react_select_fetch"
@@ -43,11 +44,13 @@
     "qs": "^6.9.3"
   },
   "devDependencies": {
+    "@storybook/react": "^5.3.18",
     "@types/qs": "^6.9.1",
     "@types/react-select": "^3.0.10",
     "enzyme": "^3.11.0",
     "react-select": "^3.0.8",
     "react-select-async-paginate": "^0.3.10",
-    "rimraf": "^3.0.1"
+    "rimraf": "^3.0.1",
+    "sleep-promise": "^8.0.1"
   }
 }

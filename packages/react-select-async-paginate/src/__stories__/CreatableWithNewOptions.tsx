@@ -1,9 +1,21 @@
 import React, { useState, useCallback } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 import Creatable from 'react-select/creatable';
 
-import AsyncPaginate from '..';
+import { withAsyncPaginate } from '..';
+import type {
+  LoadOptions,
+} from '..';
 
-const options = [];
+const AsyncPaginateCreatable = withAsyncPaginate(Creatable);
+
+type OptionType = {
+  value: number | string;
+  label: string;
+};
+
+const options: OptionType[] = [];
 for (let i = 0; i < 50; ++i) {
   options.push({
     value: i + 1,
@@ -11,13 +23,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const loadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions<OptionType> = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;
@@ -43,7 +49,7 @@ const loadOptions = async (search, prevOptions) => {
   };
 };
 
-const addNewOption = async (inputValue) => {
+const addNewOption = async (inputValue: string): Promise<OptionType> => {
   await sleep(1000);
 
   const newOption = {
@@ -56,9 +62,9 @@ const addNewOption = async (inputValue) => {
   return newOption;
 };
 
-const increaseUniq = (uniq) => uniq + 1;
+const increaseUniq = (uniq: number): number => uniq + 1;
 
-const Example = () => {
+const Example: FC = () => {
   const [cacheUniq, setCacheUniq] = useState(0);
   const [isAddingInProgress, setIsAddingInProgress] = useState(false);
   const [value, onChange] = useState(null);
@@ -80,8 +86,7 @@ const Example = () => {
           maxWidth: 300,
         }}
       >
-        <AsyncPaginate
-          SelectComponent={Creatable}
+        <AsyncPaginateCreatable
           isDisabled={isAddingInProgress}
           value={value}
           loadOptions={loadOptions}
@@ -100,4 +105,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;

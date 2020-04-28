@@ -27,7 +27,7 @@ export type Props<OptionType = any> =
   & UseSelectFetchBaseParams<OptionType>
   & ComponentProps
   & {
-    useComponents: typeof useComponents;
+    useComponents?: typeof useComponents;
     useSelectFetchBase?: typeof useSelectFetchBase;
   };
 

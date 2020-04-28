@@ -5,6 +5,7 @@ import {
   useCallback,
 } from 'react';
 import sleep from 'sleep-promise';
+import useIsMounted from 'react-is-mounted-hook';
 
 import { defaultShouldLoadMore } from './defaultShouldLoadMore';
 import { defaultReduceOptions } from './defaultReduceOptions';
@@ -81,7 +82,9 @@ export const requestOptions = async <OptionType, Additional>(
   paramsRef: {
     current: UseAsyncPaginateBaseParams<OptionType>;
   },
-  optionsCache: OptionsCache<OptionType>,
+  optionsCacheRef: {
+    current: OptionsCache<OptionType>;
+  },
   debounceTimeout: number,
   sleepParam: typeof sleep,
   setOptionsCache: SetOptionsCache<OptionType>,
@@ -90,7 +93,8 @@ export const requestOptions = async <OptionType, Additional>(
 ): Promise<void> => {
   const currentInputValue = paramsRef.current.inputValue;
 
-  const currentOptions: OptionsCacheItem<OptionType, Additional> = optionsCache[currentInputValue]
+  const currentOptions: OptionsCacheItem<OptionType, Additional> = optionsCacheRef
+    .current[currentInputValue]
     || getInitialCache(paramsRef.current);
 
   if (currentOptions.isLoading || !currentOptions.hasMore) {
@@ -179,11 +183,14 @@ export const requestOptions = async <OptionType, Additional>(
   }));
 };
 
+export const increaseStateId = (prevStateId: number): number => prevStateId + 1;
+
 export const useAsyncPaginateBasePure = <OptionType, Additional>(
   useRefParam: typeof useRef,
   useStateParam: typeof useState,
   useEffectParam: typeof useEffect,
   useCallbackParam: typeof useCallback,
+  useIsMountedParam: typeof useIsMounted,
   validateResponseParam: typeof validateResponse,
   getInitialOptionsCacheParam: typeof getInitialOptionsCache,
   requestOptionsParam: typeof requestOptions,
@@ -203,46 +210,58 @@ export const useAsyncPaginateBasePure = <OptionType, Additional>(
     shouldLoadMore = defaultShouldLoadMore,
   } = params;
 
+  const isMounted = useIsMountedParam();
+
   const isInitRef = useRefParam<boolean>(true);
   const paramsRef = useRefParam<UseAsyncPaginateBaseParams<OptionType, Additional>>(params);
 
   paramsRef.current = params;
 
-  const [
-    optionsCache,
-    setOptionsCache,
-  ] = useStateParam<OptionsCache<OptionType, Additional>>(() => getInitialOptionsCacheParam({
-    options,
-    defaultOptions,
-    additional,
-  }));
+  const setStateId = useStateParam(0)[1];
 
-  const callRequestOptions = (): void => {
+  const optionsCacheRef = useRefParam<OptionsCache>(null);
+
+  if (optionsCacheRef.current === null) {
+    optionsCacheRef.current = getInitialOptionsCacheParam({
+      options,
+      defaultOptions,
+      additional,
+    });
+  }
+
+  const callRequestOptions = useCallbackParam((): void => {
     requestOptionsParam(
       paramsRef,
-      optionsCache,
+      optionsCacheRef,
       debounceTimeout,
       sleep,
-      setOptionsCache,
+      (reduceState) => {
+        optionsCacheRef.current = reduceState(optionsCacheRef.current);
+
+        if (isMounted()) {
+          setStateId(increaseStateId);
+        }
+      },
       validateResponseParam,
       reduceOptions,
     );
-  };
+  }, []);
 
   const handleScrolledToBottom = useCallbackParam((): void => {
     const currentInputValue = paramsRef.current.inputValue;
-    const currentOptions = optionsCache[currentInputValue];
+    const currentOptions = optionsCacheRef.current[currentInputValue];
 
     if (currentOptions) {
       callRequestOptions();
     }
-  }, [optionsCache]);
+  }, []);
 
   useEffectParam(() => {
     if (isInitRef.current) {
       isInitRef.current = false;
     } else {
-      setOptionsCache({});
+      optionsCacheRef.current = {};
+      setStateId(increaseStateId);
     }
 
     if (defaultOptions === true) {
@@ -251,7 +270,7 @@ export const useAsyncPaginateBasePure = <OptionType, Additional>(
   }, deps);
 
   useEffectParam(() => {
-    if (!optionsCache[inputValue]) {
+    if (menuIsOpen && !optionsCacheRef.current[inputValue]) {
       callRequestOptions();
     }
   }, [inputValue]);
@@ -259,14 +278,17 @@ export const useAsyncPaginateBasePure = <OptionType, Additional>(
   useEffectParam(() => {
     if (
       menuIsOpen
-      && !optionsCache['']
+      && !optionsCacheRef.current['']
       && loadOptionsOnMenuOpen
     ) {
       callRequestOptions();
     }
   }, [menuIsOpen]);
 
-  const currentOptions: OptionsCacheItem<OptionType, Additional> = optionsCache[inputValue]
+  const currentOptions: OptionsCacheItem<
+  OptionType,
+  Additional
+  > = optionsCacheRef.current[inputValue]
     || getInitialCache(params);
 
   return {
@@ -287,6 +309,7 @@ export const useAsyncPaginateBase = <OptionType = any, Additional = any>(
     useState,
     useEffect,
     useCallback,
+    useIsMounted,
     validateResponse,
     getInitialOptionsCache,
     requestOptions,

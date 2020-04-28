@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
-import AsyncPaginate from '..';
+import { AsyncPaginate } from '..';
+import type {
+  LoadOptions,
+} from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -10,15 +15,21 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
+type OptionType = {
+  value: number;
+  label: string;
+};
+
+type Additional = {
+  page: number;
+};
 
 const optionsPerPage = 10;
 
-const loadOptions = async (search, page) => {
+const loadOptions = async (search: string, page: number): Promise<{
+  options: OptionType[];
+  hasMore: boolean;
+}> => {
   await sleep(1000);
 
   let filteredOptions;
@@ -48,7 +59,7 @@ const defaultAdditional = {
   page: 1,
 };
 
-const loadPageOptions = async (q, prevOptions, { page }) => {
+const loadPageOptions: LoadOptions<OptionType, Additional> = async (q, prevOptions, { page }) => {
   const {
     options: responseOptions,
     hasMore,
@@ -64,7 +75,7 @@ const loadPageOptions = async (q, prevOptions, { page }) => {
   };
 };
 
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
 
   return (
@@ -83,4 +94,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;

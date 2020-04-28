@@ -25,7 +25,7 @@ export type Props<OptionType = any, Additional = any> =
   & UseAsyncPaginateBaseParams<OptionType, Additional>
   & ComponentProps
   & {
-    useComponents: typeof useComponents;
+    useComponents?: typeof useComponents;
     useAsyncPaginateBase?: typeof useAsyncPaginateBase;
   };
 

@@ -3,6 +3,8 @@ import {
   useState as reactUseState,
   useRef as reactUseRef,
 } from 'react';
+import useIsMounted from 'react-is-mounted-hook';
+import sleepLib from 'sleep-promise';
 
 import { defaultShouldLoadMore } from '../defaultShouldLoadMore';
 import { defaultReduceOptions } from '../defaultReduceOptions';
@@ -45,6 +47,9 @@ const makeUseRef = (): typeof reactUseRef => jest.fn()
   })
   .mockReturnValueOnce({
     current: defaultParams,
+  })
+  .mockRejectedValue({
+    current: {},
   });
 
 const defaultUseEffect = (): void => {};
@@ -56,6 +61,8 @@ const defaultValidateResponse = (): void => {};
 const defaultRequestOptions = async (): Promise<void> => {};
 
 const defaultUseState = (): [OptionsCache, () => void] => [{}, (): void => {}];
+
+const defaultUseIsMounted: typeof useIsMounted = () => (): boolean => false;
 
 describe('getInitialOptionsCache', () => {
   test('should return empty options cache', () => {
@@ -218,6 +225,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCacheParam,
       defaultRequestOptions,
@@ -274,6 +282,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCacheParam,
       defaultRequestOptions,
@@ -304,6 +313,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -323,6 +333,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -346,6 +357,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -381,6 +393,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -414,6 +427,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -435,6 +449,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -458,6 +473,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -500,6 +516,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -522,6 +539,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -545,6 +563,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -577,6 +596,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -602,6 +622,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -628,6 +649,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -652,6 +674,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -683,6 +706,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -703,6 +727,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -720,6 +745,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -738,6 +764,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -755,6 +782,7 @@ describe('useAsyncPaginateBasePure', () => {
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -776,6 +804,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -818,6 +847,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       defaultRequestOptions,
@@ -849,6 +879,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -882,6 +913,7 @@ describe('useAsyncPaginateBasePure', () => {
       (useState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
+      defaultUseIsMounted,
       defaultValidateResponse,
       getInitialOptionsCache,
       requestOptionsParam,
@@ -904,7 +936,9 @@ describe('requestOptions', () => {
     current: defaultParams,
   };
 
-  const defaultSleep = async (): Promise<void> => {};
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  const defaultSleep: typeof sleepLib = async (): Promise<void> => {};
 
   const defaultSetOptionsCache = (): void => {};
 
@@ -939,7 +973,9 @@ describe('requestOptions', () => {
           additional,
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1031,7 +1067,9 @@ describe('requestOptions', () => {
           inputValue: 'test',
         },
       },
-      initialOptionsCache,
+      {
+        current: initialOptionsCache,
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1094,11 +1132,13 @@ describe('requestOptions', () => {
         },
       },
       {
-        test: {
-          options: [],
-          hasMore: true,
-          isLoading: true,
-          isFirstLoad: false,
+        current: {
+          test: {
+            options: [],
+            hasMore: true,
+            isLoading: true,
+            isFirstLoad: false,
+          },
         },
       },
       0,
@@ -1132,11 +1172,13 @@ describe('requestOptions', () => {
         },
       },
       {
-        test: {
-          options: [],
-          hasMore: false,
-          isLoading: false,
-          isFirstLoad: false,
+        current: {
+          test: {
+            options: [],
+            hasMore: false,
+            isLoading: false,
+            isFirstLoad: false,
+          },
         },
       },
       0,
@@ -1168,7 +1210,9 @@ describe('requestOptions', () => {
           additional,
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1273,7 +1317,9 @@ describe('requestOptions', () => {
           inputValue: 'test',
         },
       },
-      initialOptionsCache,
+      {
+        current: initialOptionsCache,
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1352,7 +1398,9 @@ describe('requestOptions', () => {
             loadOptions,
           },
         },
-        {},
+        {
+          current: {},
+        },
         0,
         defaultSleep,
         defaultSetOptionsCache,
@@ -1379,7 +1427,9 @@ describe('requestOptions', () => {
           ...defaultParams,
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       sleep,
       defaultSetOptionsCache,
@@ -1423,7 +1473,9 @@ describe('requestOptions', () => {
           additional,
         },
       },
-      {},
+      {
+        current: {},
+      },
       1234,
       sleep,
       setOptionsCache,
@@ -1499,11 +1551,13 @@ describe('requestOptions', () => {
 
     await requestOptions(
       paramsRef,
-      {},
-      1234,
-      async () => {
-        paramsRef.current.inputValue = 'test2';
+      {
+        current: {},
       },
+      1234,
+      (async () => {
+        paramsRef.current.inputValue = 'test2';
+      }) as unknown as typeof sleepLib,
       setOptionsCache,
       defaultValidateResponse,
       defaultReduceOptions,
@@ -1559,7 +1613,9 @@ describe('requestOptions', () => {
           additional: additional1,
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1597,7 +1653,9 @@ describe('requestOptions', () => {
           additional: additional1,
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1632,7 +1690,9 @@ describe('requestOptions', () => {
           inputValue: 'test',
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       defaultSleep,
       setOptionsCache,
@@ -1666,7 +1726,9 @@ describe('requestOptions', () => {
           inputValue: 'test',
         },
       },
-      {},
+      {
+        current: {},
+      },
       0,
       defaultSleep,
       setOptionsCache,

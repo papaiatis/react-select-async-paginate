@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
-import SelectFetch from '..';
+import { SelectFetch } from '..';
+import type { Get } from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -10,13 +13,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const get = async (url, {
+const get: Get = async (url, {
   search,
   offset,
   limit,
@@ -46,7 +43,7 @@ const get = async (url, {
   };
 };
 
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
 
   return (
@@ -68,4 +65,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;

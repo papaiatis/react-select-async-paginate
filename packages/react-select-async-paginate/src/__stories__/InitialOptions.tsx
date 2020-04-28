@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
-import AsyncPaginate from '..';
+import { AsyncPaginate } from '..';
+import type {
+  LoadOptions,
+} from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -10,13 +15,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const loadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;
@@ -42,17 +41,10 @@ const loadOptions = async (search, prevOptions) => {
   };
 };
 
-const increase = (numberOfRequests) => numberOfRequests + 1;
+const initialOptions = options.slice(0, 10);
 
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
-  const [numberOfRequests, setNumberOfRequests] = useState(0);
-
-  const wrappedLoadOptions = (...args) => {
-    setNumberOfRequests(increase);
-
-    return loadOptions(...args);
-  };
 
   return (
     <div
@@ -60,20 +52,14 @@ const Example = () => {
         maxWidth: 300,
       }}
     >
-      <p>
-        Number of requests:
-        {' '}
-        {numberOfRequests}
-      </p>
-
       <AsyncPaginate
-        debounceTimeout={300}
+        options={initialOptions}
         value={value}
-        loadOptions={wrappedLoadOptions}
+        loadOptions={loadOptions}
         onChange={onChange}
       />
     </div>
   );
 };
 
-export default () => <Example />;
+export default Example;

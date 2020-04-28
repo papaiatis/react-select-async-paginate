@@ -23,7 +23,9 @@ export const defaultResponseMapper: MapResponse = (response) => response;
 
 export const useMapToAsyncPaginatePure = <OptionType>(
   useCallbackParam: typeof useCallback,
-  {
+  selectFetchParams: UseSelectFetchMapParams<OptionType>,
+): UseAsyncPaginateParams<OptionType, Additional> => {
+  const {
     url,
     queryParams = {},
     searchParamName = 'search',
@@ -31,8 +33,8 @@ export const useMapToAsyncPaginatePure = <OptionType>(
     offsetParamName = 'offset',
     mapResponse = defaultResponseMapper,
     get = defaultGet,
-  }: UseSelectFetchMapParams<OptionType>,
-): UseAsyncPaginateParams<OptionType, Additional> => {
+  } = selectFetchParams;
+
   const loadOptions = useCallbackParam<LoadOptions<OptionType, Additional>>(
     async (search, prevOptions, { page }) => {
       const params = {

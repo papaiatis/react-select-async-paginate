@@ -1,8 +1,11 @@
 /* eslint-disable react/no-array-index-key */
 
 import React, { useState } from 'react';
+import type { FC } from 'react';
+import sleep from 'sleep-promise';
 
 import { SelectFetchBase } from '..';
+import type { Get } from '..';
 
 const options = [];
 for (let i = 0; i < 50; ++i) {
@@ -12,13 +15,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, ms);
-});
-
-const get = async (url, {
+const get: Get = async (url, {
   search,
   offset,
   limit,
@@ -48,13 +45,20 @@ const get = async (url, {
   };
 };
 
-const Example = () => {
+const Example: FC = () => {
   const [value, onChange] = useState(null);
-  const [inputValue, onInputChangeRaw] = useState('');
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [inputValue, onInputChangeRaw] = useState<string>('');
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
   const [inputHistory, setInputHistory] = useState([]);
 
-  const onInputChange = (newInputValue, { action }) => {
+  const onInputChange = (
+    newInputValue: string,
+    {
+      action,
+    }: {
+      action: string;
+    },
+  ): void => {
     setInputHistory([
       ...inputHistory,
       {
@@ -66,11 +70,11 @@ const Example = () => {
     onInputChangeRaw(newInputValue);
   };
 
-  const onMenuOpen = () => {
+  const onMenuOpen = (): void => {
     setMenuIsOpen(true);
   };
 
-  const onMenuClose = () => {
+  const onMenuClose = (): void => {
     setMenuIsOpen(false);
   };
 
@@ -132,4 +136,4 @@ const Example = () => {
   );
 };
 
-export default () => <Example />;
+export default Example;
