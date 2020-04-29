@@ -10,6 +10,7 @@ import { defaultShouldLoadMore } from '../defaultShouldLoadMore';
 import { defaultReduceOptions } from '../defaultReduceOptions';
 
 import {
+  increaseStateId,
   getInitialOptionsCache,
   getInitialCache,
   validateResponse,
@@ -20,18 +21,27 @@ import {
 import type {
   GetInitialOptionsCacheParams,
   OptionsCache,
+  OptionsCacheItem,
   UseAsyncPaginateBaseParams,
   Response,
   OptionsList,
 } from '../types';
 
-type UseStateResult = [OptionsCache, (nextCache: OptionsCache) => void];
-type UseStateArgs = [() => OptionsCache];
+type UseStateResult = [number, (nextCache: OptionsCache) => void];
+type UseStateArgs = [() => number];
 type LoadOptionsArgs = [
   string,
   OptionsList,
   any,
 ];
+
+const defaultCacheItem: OptionsCacheItem<any, any> = {
+  options: [],
+  isLoading: false,
+  isFirstLoad: false,
+  hasMore: true,
+  additional: null,
+};
 
 const defaultParams: UseAsyncPaginateBaseParams = {
   loadOptions: () => ({
@@ -41,16 +51,20 @@ const defaultParams: UseAsyncPaginateBaseParams = {
   menuIsOpen: false,
 };
 
-const makeUseRef = (): typeof reactUseRef => jest.fn()
-  .mockReturnValueOnce({
+const makeUseRef = ({
+  isInit = {
     current: true,
-  })
-  .mockReturnValueOnce({
+  },
+  params = {
     current: defaultParams,
-  })
-  .mockRejectedValue({
+  },
+  optionsCache = {
     current: {},
-  });
+  },
+}): typeof reactUseRef => jest.fn()
+  .mockReturnValueOnce(isInit)
+  .mockReturnValueOnce(params)
+  .mockReturnValueOnce(optionsCache);
 
 const defaultUseEffect = (): void => {};
 
@@ -60,9 +74,15 @@ const defaultValidateResponse = (): void => {};
 
 const defaultRequestOptions = async (): Promise<void> => {};
 
-const defaultUseState = (): [OptionsCache, () => void] => [{}, (): void => {}];
+const defaultUseState = (): [number, () => void] => [1, (): void => {}];
 
 const defaultUseIsMounted: typeof useIsMounted = () => (): boolean => false;
+
+describe('increaseStateId', () => {
+  test('should increase value', () => {
+    expect(increaseStateId(1)).toBe(2);
+  });
+});
 
 describe('getInitialOptionsCache', () => {
   test('should return empty options cache', () => {
@@ -195,8 +215,6 @@ describe('useAsyncPaginateBasePure', () => {
     OptionsCache,
     [GetInitialOptionsCacheParams]
     >(() => ({}));
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): OptionsCache => ({})]);
 
     const options = [
       {
@@ -221,8 +239,12 @@ describe('useAsyncPaginateBasePure', () => {
     };
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: null,
+        },
+      }),
+      defaultUseState,
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -236,65 +258,6 @@ describe('useAsyncPaginateBasePure', () => {
         additional,
       },
     );
-
-    useState.mock.calls[0][0]();
-
-    expect(getInitialOptionsCacheParam.mock.calls.length).toBe(1);
-    expect(getInitialOptionsCacheParam.mock.calls[0][0]).toEqual({
-      options,
-      defaultOptions,
-      additional,
-    });
-  });
-
-  test('should call getInitialOptionsCache on init', () => {
-    const getInitialOptionsCacheParam = jest.fn<
-    OptionsCache,
-    [GetInitialOptionsCacheParams]
-    >(() => ({}));
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): OptionsCache => ({})]);
-
-    const options = [
-      {
-        label: 'label 1',
-        value: 'value 1',
-      },
-    ];
-
-    const defaultOptions = [
-      {
-        label: 'label 2',
-        value: 'value 2',
-      },
-      {
-        label: 'label 3',
-        value: 'value 3',
-      },
-    ];
-
-    const additional = {
-      page: 2,
-    };
-
-    useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
-      defaultUseEffect,
-      defaultUseCallback,
-      defaultUseIsMounted,
-      defaultValidateResponse,
-      getInitialOptionsCacheParam,
-      defaultRequestOptions,
-      {
-        ...defaultParams,
-        options,
-        defaultOptions,
-        additional,
-      },
-    );
-
-    useState.mock.calls[0][0]();
 
     expect(getInitialOptionsCacheParam.mock.calls.length).toBe(1);
     expect(getInitialOptionsCacheParam.mock.calls[0][0]).toEqual({
@@ -309,7 +272,7 @@ describe('useAsyncPaginateBasePure', () => {
     const useEffect = jest.fn();
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -329,7 +292,7 @@ describe('useAsyncPaginateBasePure', () => {
     const requestOptionsParam = jest.fn();
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -353,7 +316,7 @@ describe('useAsyncPaginateBasePure', () => {
     const requestOptionsParam = jest.fn();
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -372,24 +335,27 @@ describe('useAsyncPaginateBasePure', () => {
     expect(requestOptionsParam.mock.calls.length).toBe(1);
   });
 
-  test('should not reset options cache from first useEffect', async () => {
+  test('should not reset options cache from first useEffect on initial render', async () => {
     const isInit = {
       current: true,
     };
 
-    const useRef = jest.fn()
-      .mockReturnValueOnce(isInit)
-      .mockReturnValueOnce({
-        current: defaultParams,
-      });
+    const optionsCache = {
+      current: {
+        test: defaultCacheItem,
+      },
+    };
 
-    const setOptionsCache = jest.fn();
+    const setStateId = jest.fn();
     const useEffect = jest.fn();
     const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, setOptionsCache]);
+      .mockReturnValue([2, setStateId]);
 
     useAsyncPaginateBasePure(
-      useRef,
+      makeUseRef({
+        isInit,
+        optionsCache,
+      }),
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -403,27 +369,39 @@ describe('useAsyncPaginateBasePure', () => {
     useEffect.mock.calls[0][0]();
 
     expect(isInit.current).toBe(false);
-    expect(setOptionsCache.mock.calls.length).toBe(0);
+    expect(optionsCache.current).toEqual({
+      test: defaultCacheItem,
+    });
+    expect(setStateId.mock.calls.length).toBe(0);
   });
 
-  test('should reset options cache from not first useEffect', async () => {
+  test('should reset options cache from first useEffect on not initial render', async () => {
     const isInit = {
       current: false,
     };
 
-    const useRef = jest.fn()
-      .mockReturnValueOnce(isInit)
-      .mockReturnValueOnce({
-        current: defaultParams,
-      });
+    const optionsCache = {
+      current: {
+        test: {
+          options: [],
+          isLoading: false,
+          isFirstLoad: false,
+          hasMore: true,
+          additional: null,
+        },
+      },
+    };
 
-    const setOptionsCache = jest.fn();
+    const setStateId = jest.fn();
     const useEffect = jest.fn();
     const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, setOptionsCache]);
+      .mockReturnValue([2, setStateId]);
 
     useAsyncPaginateBasePure(
-      useRef,
+      makeUseRef({
+        isInit,
+        optionsCache,
+      }),
       (useState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -437,15 +415,16 @@ describe('useAsyncPaginateBasePure', () => {
     useEffect.mock.calls[0][0]();
 
     expect(isInit.current).toBe(false);
-    expect(setOptionsCache.mock.calls.length).toBe(1);
-    expect(setOptionsCache.mock.calls[0][0]).toEqual({});
+    expect(optionsCache.current).toEqual({});
+    expect(setStateId.mock.calls.length).toBe(1);
+    expect(setStateId.mock.calls[0][0]).toEqual(increaseStateId);
   });
 
   test('should provide inputValue as dependency to second useEffect', async () => {
     const useEffect = jest.fn();
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -462,15 +441,17 @@ describe('useAsyncPaginateBasePure', () => {
     expect(useEffect.mock.calls[1][1]).toEqual(['test']);
   });
 
-  test('should load options on inputValue change if options are not cached', async () => {
+  test('should load options on inputValue change if options are not cached if menu is open', async () => {
     const requestOptionsParam = jest.fn();
     const useEffect = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): void => {}]);
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -480,6 +461,7 @@ describe('useAsyncPaginateBasePure', () => {
       {
         ...defaultParams,
         inputValue: 'test',
+        menuIsOpen: true,
       },
     );
 
@@ -488,32 +470,63 @@ describe('useAsyncPaginateBasePure', () => {
     expect(requestOptionsParam.mock.calls.length).toBe(1);
   });
 
+  test('should not load options on inputValue change if options are not cached if menu is not open', async () => {
+    const requestOptionsParam = jest.fn();
+    const useEffect = jest.fn();
+
+    useAsyncPaginateBasePure(
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
+      useEffect,
+      defaultUseCallback,
+      defaultUseIsMounted,
+      defaultValidateResponse,
+      getInitialOptionsCache,
+      requestOptionsParam,
+      {
+        ...defaultParams,
+        inputValue: 'test',
+        menuIsOpen: false,
+      },
+    );
+
+    useEffect.mock.calls[1][0]();
+
+    expect(requestOptionsParam.mock.calls.length).toBe(0);
+  });
+
   test('should not load options on inputValue change if options are cached', async () => {
     const requestOptionsParam = jest.fn();
     const useEffect = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{
-        test: {
-          options: [
-            {
-              value: 1,
-              label: '1',
-            },
-
-            {
-              value: 2,
-              label: '2',
-            },
-          ],
-          hasMore: true,
-          isLoading: false,
-          isFirstLoad: false,
-        },
-      }, (): void => {}]);
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {
+            test: {
+              options: [
+                {
+                  value: 1,
+                  label: '1',
+                },
+
+                {
+                  value: 2,
+                  label: '2',
+                },
+              ],
+              hasMore: true,
+              isLoading: false,
+              isFirstLoad: false,
+            },
+          },
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -535,7 +548,7 @@ describe('useAsyncPaginateBasePure', () => {
     const useEffect = jest.fn();
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
@@ -555,12 +568,14 @@ describe('useAsyncPaginateBasePure', () => {
   test('should not load options from third useEffect if menuIsOpen is false', async () => {
     const requestOptionsParam = jest.fn();
     const useEffect = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): void => {}]);
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -581,19 +596,21 @@ describe('useAsyncPaginateBasePure', () => {
   test('should not load options from third useEffect if optionsCache defined for empty search', async () => {
     const requestOptionsParam = jest.fn();
     const useEffect = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{
-        '': {
-          options: [],
-          hasMore: true,
-          isLoading: false,
-          isFirstLoad: false,
-        },
-      }, (): void => {}]);
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {
+            '': {
+              options: [],
+              hasMore: true,
+              isLoading: false,
+              isFirstLoad: false,
+            },
+          },
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -614,12 +631,14 @@ describe('useAsyncPaginateBasePure', () => {
   test('should not load options from third useEffect if loadOptionsOnMenuOpen is false', async () => {
     const requestOptionsParam = jest.fn();
     const useEffect = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): void => {}]);
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -641,12 +660,14 @@ describe('useAsyncPaginateBasePure', () => {
   test('should load options from third useEffect', async () => {
     const requestOptionsParam = jest.fn();
     const useEffect = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): void => {}]);
 
     useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       useEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -666,12 +687,14 @@ describe('useAsyncPaginateBasePure', () => {
 
   test('should not load options on scroll to bottom if cache not defined for current search', async () => {
     const requestOptionsParam = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): void => {}]);
 
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -691,19 +714,21 @@ describe('useAsyncPaginateBasePure', () => {
 
   test('should load options on scroll to bottom if cache defined for current search', async () => {
     const requestOptionsParam = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{
-        test: {
-          options: [],
-          hasMore: true,
-          isLoading: false,
-          isFirstLoad: false,
-        },
-      }, (): void => {}]);
 
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {
+            test: {
+              options: [],
+              hasMore: true,
+              isLoading: false,
+              isFirstLoad: false,
+            },
+          },
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -723,7 +748,7 @@ describe('useAsyncPaginateBasePure', () => {
 
   test('should provide default shouldLoadMore', async () => {
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
@@ -741,7 +766,7 @@ describe('useAsyncPaginateBasePure', () => {
     const shouldLoadMore = jest.fn();
 
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
@@ -760,7 +785,7 @@ describe('useAsyncPaginateBasePure', () => {
 
   test('should provide default filterOption', async () => {
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
@@ -774,11 +799,11 @@ describe('useAsyncPaginateBasePure', () => {
     expect(result.filterOption).toBe(null);
   });
 
-  test('should provide default filterOption', async () => {
+  test('should provide redefined filterOption', async () => {
     const filterOption = jest.fn();
 
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
+      makeUseRef({}),
       (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
@@ -796,12 +821,13 @@ describe('useAsyncPaginateBasePure', () => {
   });
 
   test('should provide initial params if cache not defined for current search', async () => {
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{}, (): void => {}]);
-
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {},
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -832,19 +858,20 @@ describe('useAsyncPaginateBasePure', () => {
       },
     ];
 
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{
-        test: {
-          options,
-          hasMore: true,
-          isLoading: true,
-          isFirstLoad: false,
-        },
-      }, (): void => {}]);
-
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {
+            test: {
+              options,
+              hasMore: true,
+              isLoading: true,
+              isFirstLoad: false,
+            },
+          },
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -864,19 +891,21 @@ describe('useAsyncPaginateBasePure', () => {
 
   test('should provide default reduceOptions to requestOptions', async () => {
     const requestOptionsParam = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{
-        test: {
-          options: [],
-          hasMore: true,
-          isLoading: false,
-          isFirstLoad: false,
-        },
-      }, (): void => {}]);
 
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {
+            test: {
+              options: [],
+              hasMore: true,
+              isLoading: false,
+              isFirstLoad: false,
+            },
+          },
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -898,19 +927,21 @@ describe('useAsyncPaginateBasePure', () => {
   test('should provide redefined reduceOptions to requestOptions', async () => {
     const requestOptionsParam = jest.fn();
     const reduceOptions = jest.fn();
-    const useState = jest.fn<UseStateResult, UseStateArgs>()
-      .mockReturnValue([{
-        test: {
-          options: [],
-          hasMore: true,
-          isLoading: false,
-          isFirstLoad: false,
-        },
-      }, (): void => {}]);
 
     const result = useAsyncPaginateBasePure(
-      makeUseRef(),
-      (useState as unknown as typeof reactUseState),
+      makeUseRef({
+        optionsCache: {
+          current: {
+            test: {
+              options: [],
+              hasMore: true,
+              isLoading: false,
+              isFirstLoad: false,
+            },
+          },
+        },
+      }),
+      (defaultUseState as unknown as typeof reactUseState),
       defaultUseEffect,
       defaultUseCallback,
       defaultUseIsMounted,
@@ -928,6 +959,107 @@ describe('useAsyncPaginateBasePure', () => {
 
     expect(requestOptionsParam.mock.calls.length).toBe(1);
     expect(requestOptionsParam.mock.calls[0][6]).toBe(reduceOptions);
+  });
+
+  test('should reduce change cached options and set next increase state id if mounted', async () => {
+    const requestOptionsParam = jest.fn();
+
+    const setStateId = jest.fn();
+    const useState = jest.fn<UseStateResult, UseStateArgs>()
+      .mockReturnValue([2, setStateId]);
+
+    const reduceState = jest.fn(() => ({
+      test2: defaultCacheItem,
+    }));
+
+    const optionsCache = {
+      current: {
+        test1: defaultCacheItem,
+      },
+    };
+
+    const result = useAsyncPaginateBasePure(
+      makeUseRef({
+        optionsCache,
+      }),
+      (useState as unknown as typeof reactUseState),
+      defaultUseEffect,
+      defaultUseCallback,
+      () => (): boolean => true,
+      defaultValidateResponse,
+      getInitialOptionsCache,
+      requestOptionsParam,
+      {
+        ...defaultParams,
+        inputValue: 'test1',
+      },
+    );
+
+    result.handleScrolledToBottom();
+
+    requestOptionsParam.mock.calls[0][4](reduceState);
+
+    expect(reduceState).toHaveBeenCalledTimes(1);
+    expect(reduceState).toHaveBeenCalledWith({
+      test1: defaultCacheItem,
+    });
+
+    expect(optionsCache.current).toEqual({
+      test2: defaultCacheItem,
+    });
+
+    expect(setStateId).toHaveBeenCalledTimes(1);
+    expect(setStateId).toHaveBeenCalledWith(increaseStateId);
+  });
+
+  test('should reduce change cached options and not set next increase state id if not mounted', async () => {
+    const requestOptionsParam = jest.fn();
+
+    const setStateId = jest.fn();
+    const useState = jest.fn<UseStateResult, UseStateArgs>()
+      .mockReturnValue([2, setStateId]);
+
+    const reduceState = jest.fn(() => ({
+      test2: defaultCacheItem,
+    }));
+
+    const optionsCache = {
+      current: {
+        test1: defaultCacheItem,
+      },
+    };
+
+    const result = useAsyncPaginateBasePure(
+      makeUseRef({
+        optionsCache,
+      }),
+      (useState as unknown as typeof reactUseState),
+      defaultUseEffect,
+      defaultUseCallback,
+      () => (): boolean => false,
+      defaultValidateResponse,
+      getInitialOptionsCache,
+      requestOptionsParam,
+      {
+        ...defaultParams,
+        inputValue: 'test1',
+      },
+    );
+
+    result.handleScrolledToBottom();
+
+    requestOptionsParam.mock.calls[0][4](reduceState);
+
+    expect(reduceState).toHaveBeenCalledTimes(1);
+    expect(reduceState).toHaveBeenCalledWith({
+      test1: defaultCacheItem,
+    });
+
+    expect(optionsCache.current).toEqual({
+      test2: defaultCacheItem,
+    });
+
+    expect(setStateId).toHaveBeenCalledTimes(0);
   });
 });
 
