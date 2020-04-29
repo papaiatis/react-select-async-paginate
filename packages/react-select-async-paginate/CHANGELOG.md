@@ -1,12 +1,26 @@
-## 0.4.0
+## 0.4.0-alpha.0
+
+The project was fully rewritten to **typescript** and **react hooks**.
 
 ### Breaking changes
 
+* Use `withAsyncPaginate` and `withAsyncPaginateBase` instead of `SelectComponent` prop
+
+  ```javascript
+  const CustomAsyncPagiante = withAsyncPaginate(SelectComponent);
+  ```
+
 * `additional` is `undefined` by default instead of `null`
-* save previous additional if not changed
+
+* Save previous additional if not changed
+
 * Validate result of `loadOptions` call
-* use `withAsyncPaginate` and `withAsyncPaginateBase` instead of `SelectComponent` prop
-* use named export instead of default export
+
+* Use named export instead of default export
+
+  ```javascript
+  import { AsyncPaginate } from 'react-select-async-paginate';
+  ```
 
 ## 0.3.14 (01 apr 2020)
 
