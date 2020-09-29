@@ -14,6 +14,7 @@ export { useComponents } from './useComponents';
 export const AsyncPaginate = withAsyncPaginate(Select);
 
 export type {
+  OptionTypeBase,
   OptionsList,
   ReduceOptions,
   OptionsCacheItem,

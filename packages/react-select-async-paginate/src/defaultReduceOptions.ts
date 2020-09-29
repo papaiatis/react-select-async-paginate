@@ -1,8 +1,9 @@
 import type {
-  ReduceOptions,
+  OptionTypeBase,
+  OptionsList,
 } from './types';
 
-export const defaultReduceOptions: ReduceOptions = (
-  prevOptions,
-  loadedOptions,
-) => [...prevOptions, ...loadedOptions];
+export const defaultReduceOptions = <OptionType extends OptionTypeBase>(
+  prevOptions: OptionsList<OptionType>,
+  loadedOptions: OptionsList<OptionType>,
+): OptionsList<OptionType> => [...prevOptions, ...loadedOptions] as OptionsList<OptionType>;

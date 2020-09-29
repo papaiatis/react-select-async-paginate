@@ -21,6 +21,11 @@ import type {
   UseAsyncPaginateResult,
 } from '../types';
 
+type OptionType = {
+  value: number;
+  label: string;
+};
+
 const TestComponent: FC = () => <div />;
 
 const AsyncPagintate = withAsyncPaginate(TestComponent);
@@ -29,7 +34,7 @@ type PageObject = {
   getChildNode: () => ShallowWrapper;
 };
 
-const defaultLoadOptions: LoadOptions = () => ({
+const defaultLoadOptions: LoadOptions<OptionType> = () => ({
   options: [],
 });
 
@@ -38,7 +43,7 @@ const defaultProps = {
 
   useComponents: (): SelectComponentsConfig<any> => ({}),
 
-  useAsyncPaginate: (): UseAsyncPaginateResult => ({
+  useAsyncPaginate: (): UseAsyncPaginateResult<OptionType> => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
@@ -53,7 +58,7 @@ const defaultProps = {
   }),
 };
 
-const setup = (props: Partial<Props>): PageObject => {
+const setup = <OptionType>(props: Partial<Props<OptionType, any>>): PageObject => {
   const wrapper: ShallowWrapper = shallow(
     <AsyncPagintate
       {...defaultProps}
@@ -88,7 +93,7 @@ test('should provide props from hook to child', () => {
     },
   ];
 
-  const useAsyncPaginate = (): UseAsyncPaginateResult => ({
+  const useAsyncPaginate = (): UseAsyncPaginateResult<OptionType> => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,
@@ -131,7 +136,7 @@ test('should redefine parent props with hook props', () => {
     },
   ];
 
-  const useAsyncPaginate = (): UseAsyncPaginateResult => ({
+  const useAsyncPaginate = (): UseAsyncPaginateResult<OptionType> => ({
     handleScrolledToBottom: (): void => {},
     shouldLoadMore: (): boolean => true,
     isLoading: true,

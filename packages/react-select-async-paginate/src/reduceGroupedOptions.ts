@@ -1,8 +1,12 @@
 import type {
-  ReduceOptions,
+  OptionTypeBase,
+  OptionsList,
 } from './types';
 
-export const reduceGroupedOptions: ReduceOptions = (prevOptions, loadedOptions) => {
+export const reduceGroupedOptions = <OptionType extends OptionTypeBase>(
+  prevOptions: OptionsList<OptionType>,
+  loadedOptions: OptionsList<OptionType>,
+): OptionsList<OptionType> => {
   const res = prevOptions.slice();
 
   const mapLabelToIndex = {};
@@ -21,7 +25,7 @@ export const reduceGroupedOptions: ReduceOptions = (prevOptions, loadedOptions) 
         ++prevOptionsIndex
       ) {
         const prevGroup = prevOptions[prevOptionsIndex];
-        mapLabelToIndex[prevGroup.label] = prevOptionsIndex;
+        mapLabelToIndex[prevGroup.label as string] = prevOptionsIndex;
       }
 
       groupIndex = mapLabelToIndex[label];

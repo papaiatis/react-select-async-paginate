@@ -23,7 +23,7 @@ export const useComponentsPure = <OptionType>(
     ...components,
   }), [components]);
 
-export const useComponents = <OptionType = any>(
+export const useComponents = <OptionType>(
   components: SelectComponentsConfig<OptionType>,
 ): SelectComponentsConfig<OptionType> => useComponentsPure(
     useMemo,

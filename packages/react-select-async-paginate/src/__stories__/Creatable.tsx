@@ -8,6 +8,11 @@ import type {
   LoadOptions,
 } from '..';
 
+type OptionType = {
+  value: number | string;
+  label: string;
+};
+
 const AsyncPaginateCreatable = withAsyncPaginate(Creatable);
 
 const options = [];
@@ -18,7 +23,7 @@ for (let i = 0; i < 50; ++i) {
   });
 }
 
-const loadOptions: LoadOptions = async (search, prevOptions) => {
+const loadOptions: LoadOptions<OptionType> = async (search, prevOptions) => {
   await sleep(1000);
 
   let filteredOptions;

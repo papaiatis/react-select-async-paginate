@@ -1,7 +1,7 @@
 import React from 'react';
 import type {
-  FC,
   ComponentType,
+  ReactElement,
 } from 'react';
 import type {
   Props as SelectProps,
@@ -20,7 +20,7 @@ import type {
   ComponentProps,
 } from './types';
 
-export type Props<OptionType = any, Additional = any> =
+export type Props<OptionType, Additional> =
   & SelectProps<OptionType>
   & UseAsyncPaginateParams<OptionType, Additional>
   & ComponentProps
@@ -29,11 +29,17 @@ export type Props<OptionType = any, Additional = any> =
     useAsyncPaginate?: typeof useAsyncPaginate;
   };
 
-export const withAsyncPaginate = <OptionType = any, Additional = any>(
+export type WithAsyncPaginateType = <OptionType, Additional = null>(
+  props: Props<OptionType, Additional>,
+) => ReactElement;
+
+export const withAsyncPaginate = (
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  SelectComponent: ComponentType<SelectProps<OptionType>>,
-): FC<Props<OptionType, Additional>> => {
-  const WithAsyncPaginate: FC<Props<OptionType, Additional>> = (props) => {
+  SelectComponent: ComponentType<SelectProps<any>>,
+): WithAsyncPaginateType => {
+  const WithAsyncPaginate = <OptionType, Additional = null>(
+    props: Props<OptionType, Additional>,
+  ): ReactElement => {
     const {
       components,
       selectRef,

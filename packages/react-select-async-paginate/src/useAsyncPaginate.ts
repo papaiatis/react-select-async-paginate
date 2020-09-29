@@ -20,7 +20,7 @@ export const useAsyncPaginatePure = <OptionType, Additional>(
   useStateParam: typeof useState,
   useCallbackParam: typeof useCallback,
   useAsyncPaginateBaseParam: typeof useAsyncPaginateBase,
-  params: UseAsyncPaginateParams<OptionType>,
+  params: UseAsyncPaginateParams<OptionType, Additional>,
   deps: ReadonlyArray<any> = [],
 ): UseAsyncPaginateResult<OptionType> => {
   const {
@@ -91,7 +91,7 @@ export const useAsyncPaginatePure = <OptionType, Additional>(
   };
 };
 
-export const useAsyncPaginate = <OptionType = any, Additional = any>(
+export const useAsyncPaginate = <OptionType, Additional = null>(
   params: UseAsyncPaginateParams<OptionType, Additional>,
   deps: ReadonlyArray<any> = [],
 ): UseAsyncPaginateResult<OptionType> => useAsyncPaginatePure<OptionType, Additional>(
